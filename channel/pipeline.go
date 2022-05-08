@@ -16,41 +16,22 @@
 
 package channel
 
-var _ Channel = (*channel)(nil)
-
-type Channel interface {
-	Id() Id
-	Parent() Channel
-	Config() Config
-	Read() Channel
-	Flush() Channel
-	Pipeline() Pipeline
-}
-
-type channel struct {
-	pipeline Pipeline
-}
-
-func (c *channel) Id() Id {
-	return nil
-}
-
-func (c *channel) Parent() Channel {
-	return nil
-}
-
-func (c *channel) Config() Config {
-	return Config{}
-}
-
-func (c *channel) Read() Channel {
-	return c
-}
-
-func (c *channel) Flush() Channel {
-	return c
-}
-
-func (c *channel) Pipeline() Pipeline {
-	return c.pipeline
+type Pipeline interface {
+	AddFirst(name string, handler Handler) Pipeline
+	AddLast(name string, handler Handler) Pipeline
+	AddBefore(base, name string, handler Handler) Pipeline
+	AddAfter(base, name string, handler Handler) Pipeline
+	Remove(name string) Handler
+	RemoveFirst(name string) Handler
+	RemoveLast(name string) Handler
+	Replace(old, new string, handler Handler) Handler
+	First() Handler
+	Last() Handler
+	Get(name string) Handler
+	Context(handler Handler) HandlerContext // by handler
+	ContextN(name string) HandlerContext    // by name
+	Channel() Channel
+	Names() []string
+	ToMap() map[string]Handler
+	Flush() Pipeline
 }

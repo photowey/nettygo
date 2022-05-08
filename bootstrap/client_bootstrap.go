@@ -14,19 +14,13 @@
  * limitations under the License.
  */
 
-package nettygo
+package bootstrap
 
 import (
-	`github.com/photowey/nettygo/bootstrap`
+	`github.com/photowey/nettygo/channel`
 )
 
-// NewClientBootstrap create a client bootstrap
-func NewClientBootstrap() bootstrap.ClientBootstrap {
-	return nil
-}
-
-// NewServerBootstrap create a server bootstrap
-func NewServerBootstrap() bootstrap.ServerBootstrap {
-
-	return nil
+// ClientBootstrap client bootstrap
+type ClientBootstrap interface {
+	Connect(host string, port int) (channel.Future, error)
 }

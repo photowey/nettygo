@@ -14,19 +14,6 @@
  * limitations under the License.
  */
 
-package nettygo
+package channel
 
-import (
-	`github.com/photowey/nettygo/bootstrap`
-)
-
-// NewClientBootstrap create a client bootstrap
-func NewClientBootstrap() bootstrap.ClientBootstrap {
-	return nil
-}
-
-// NewServerBootstrap create a server bootstrap
-func NewServerBootstrap() bootstrap.ServerBootstrap {
-
-	return nil
-}
+type Config struct{}
