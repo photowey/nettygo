@@ -14,13 +14,4 @@
  * limitations under the License.
  */
 
-package bootstrap
-
-import (
-	`github.com/photowey/nettygo/channel`
-)
-
-// ClientBootstrap client bootstrap
-type ClientBootstrap interface {
-	Connect(host string, port int) (channel.Future, error)
-}
+package logger_test

@@ -14,6 +14,4 @@
  * limitations under the License.
  */
 
-package channel
-
-type Config struct{}
+package logger_test
