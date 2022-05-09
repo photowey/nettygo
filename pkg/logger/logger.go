@@ -31,11 +31,13 @@ const (
 	defaultPath     = "logs"
 	defaultFileName = "nettygo.log"
 	defaultLevel    = "debug"
+	emptyString     = ""
 )
 
 var logger *zap.SugaredLogger
 
-func New(conf Config) error {
+// Init populate logger instance
+func Init(conf Config) error {
 	mappings := loggerLevelMappings()
 
 	writeSyncer, err := populateLoggerWriter(conf)
@@ -61,6 +63,7 @@ func loggerLevelMappings() map[string]zapcore.Level {
 		"info":  zapcore.InfoLevel,
 		"warn":  zapcore.WarnLevel,
 		"error": zapcore.ErrorLevel,
+		"panic": zapcore.PanicLevel,
 	}
 }
 
@@ -77,8 +80,8 @@ func populateLoggerEncoder(config Config) zapcore.Encoder {
 }
 
 func populateLoggerWriter(conf Config) (zapcore.WriteSyncer, error) {
-	conf.Path = helper.Match("" == conf.Path, conf.Path, defaultPath)
-	conf.FileName = helper.Match("" == conf.FileName, conf.FileName, defaultFileName)
+	conf.Path, _ = helper.Match(emptyString == conf.Path, conf.Path, defaultPath).(string)
+	conf.FileName, _ = helper.Match(emptyString == conf.FileName, conf.FileName, defaultFileName).(string)
 
 	if exist := helper.IsExist(conf.Path); !exist {
 		if err := os.MkdirAll(conf.Path, os.ModePerm); err != nil {
