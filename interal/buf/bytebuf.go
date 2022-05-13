@@ -20,9 +20,7 @@ import (
 	"bytes"
 )
 
-var (
-	_ ByteBuf = (*bytebuf)(nil)
-)
+var _ ByteBuf = (*bytebuf)(nil)
 
 type ByteBuf interface {
 	Read(bytes []byte) (n int, err error)
@@ -62,6 +60,7 @@ func (buf *bytebuf) Write(bytes []byte) (n int, err error) {
 	// TODO
 	return 0, nil
 }
+
 func (buf *bytebuf) WriteInt(v int) (n int, err error) {
 	// TODO
 	return 0, nil

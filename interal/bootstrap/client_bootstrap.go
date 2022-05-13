@@ -17,7 +17,7 @@
 package bootstrap
 
 import (
-	`github.com/photowey/nettygo/interal/channel`
+	"github.com/photowey/nettygo/interal/channel"
 )
 
 // ClientBootstrap client bootstrap

@@ -17,14 +17,14 @@
 package logger
 
 import (
-	`os`
-	`path/filepath`
+	"os"
+	"path/filepath"
 
-	`github.com/photowey/nettygo/interal/helper`
-	`github.com/photowey/perrors`
-	`go.uber.org/zap`
-	`go.uber.org/zap/zapcore`
-	`gopkg.in/natefinch/lumberjack.v2`
+	"github.com/photowey/nettygo/interal/helper"
+	"github.com/photowey/perrors"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
+	"gopkg.in/natefinch/lumberjack.v2"
 )
 
 const (

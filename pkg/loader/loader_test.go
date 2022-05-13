@@ -17,9 +17,9 @@
 package loader_test
 
 import (
-	`testing`
+	"testing"
 
-	`github.com/photowey/nettygo/pkg/loader`
+	"github.com/photowey/nettygo/pkg/loader"
 )
 
 type (

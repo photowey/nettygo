@@ -17,5 +17,4 @@
 package bootstrap
 
 // ServerBootstrap server bootstrap
-type ServerBootstrap interface {
-}
+type ServerBootstrap interface{}

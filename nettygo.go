@@ -17,7 +17,7 @@
 package nettygo
 
 import (
-	`github.com/photowey/nettygo/interal/bootstrap`
+	"github.com/photowey/nettygo/interal/bootstrap"
 )
 
 type CompressType int
@@ -29,6 +29,5 @@ func NewClientBootstrap() bootstrap.ClientBootstrap {
 
 // NewServerBootstrap create a server bootstrap
 func NewServerBootstrap() bootstrap.ServerBootstrap {
-
 	return nil
 }

@@ -17,7 +17,7 @@
 package loader
 
 import (
-	`fmt`
+	"fmt"
 
 	"github.com/spf13/viper"
 )
