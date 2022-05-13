@@ -14,21 +14,15 @@
  * limitations under the License.
  */
 
-package nettygo
+package connection
 
 import (
-	`github.com/photowey/nettygo/interal/bootstrap`
+	"github.com/photowey/nettygo"
 )
 
-type CompressType int
-
-// NewClientBootstrap create a client bootstrap
-func NewClientBootstrap() bootstrap.ClientBootstrap {
-	return nil
-}
-
-// NewServerBootstrap create a server bootstrap
-func NewServerBootstrap() bootstrap.ServerBootstrap {
-
-	return nil
+type Connection interface {
+	ID() uint32
+	SetCompressType(nettygo.CompressType)
+	LocalAddr() string
+	RemoteAddr() string
 }

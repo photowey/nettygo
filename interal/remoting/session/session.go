@@ -14,21 +14,38 @@
  * limitations under the License.
  */
 
-package nettygo
+package session
 
 import (
-	`github.com/photowey/nettygo/interal/bootstrap`
+	"net"
+
+	"github.com/photowey/nettygo/interal/remoting/connection"
 )
 
-type CompressType int
-
-// NewClientBootstrap create a client bootstrap
-func NewClientBootstrap() bootstrap.ClientBootstrap {
-	return nil
+type Session interface {
+	connection.Connection
+	Reset()
+	Conn() net.Conn
+	Stat() string
+	IsClosed() bool
 }
 
-// NewServerBootstrap create a server bootstrap
-func NewServerBootstrap() bootstrap.ServerBootstrap {
+type Reader interface {
+	Read(Session, []byte) (any, int, error) // buf.ByteBuf?
+}
 
-	return nil
+type Writer interface {
+	Write(Session, any) ([]byte, error)
+}
+
+type ReadWriter interface {
+	Reader
+	Writer
+}
+
+type EventListener interface {
+	OnOpen(Session) error
+	OnClose(Session)
+	OnMessage(Session, any)
+	OnError(Session, error)
 }
