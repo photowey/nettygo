@@ -28,6 +28,8 @@ type ByteBuf interface {
 	Write(bytes []byte) (int, error)
 	WriteInt(v int) (n int, err error)
 	Capacity() int
+	Readable() int
+	Writeable() int
 	Release()
 	Resume()
 }
@@ -68,6 +70,14 @@ func (buf *bytebuf) WriteInt(v int) (n int, err error) {
 
 func (buf *bytebuf) Capacity() int {
 	return len(buf.buf.Bytes())
+}
+
+func (buf *bytebuf) Readable() int {
+	return buf.writerIndex - buf.readerIndex
+}
+
+func (buf *bytebuf) Writeable() int {
+	return buf.Capacity() - buf.writerIndex
 }
 
 func (buf *bytebuf) Release() {
