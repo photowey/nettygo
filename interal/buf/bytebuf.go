@@ -25,11 +25,20 @@ var _ ByteBuf = (*bytebuf)(nil)
 type ByteBuf interface {
 	Read(bytes []byte) (n int, err error)
 	ReadInt() (int, error)
+
 	Write(bytes []byte) (int, error)
 	WriteInt(v int) (n int, err error)
+
 	Capacity() int
+	// Readable Returns the number of readable bytes which is equal to
+	//
+	// buf.writerIndex - buf.readerIndex
 	Readable() int
+	// Writeable Returns the number of writable bytes which is equal to
+	//
+	// this.capacity - this.writerIndex
 	Writeable() int
+
 	Release()
 	Resume()
 }
