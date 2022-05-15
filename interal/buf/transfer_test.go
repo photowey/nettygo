@@ -17,7 +17,6 @@
 package buf
 
 import (
-	"bytes"
 	"reflect"
 	"testing"
 )
@@ -32,11 +31,25 @@ func TestByteToInt(t *testing.T) {
 		want int
 	}{
 		{
-			name: "Test byte to int",
+			name: "Test byte to int-1",
 			args: args{
-				bytez: []byte{0x00, 0x00, 0x00, 0x00, 0x01},
+				bytez: []byte{0x00, 0x00, 0x00, 0x01},
 			},
 			want: 1,
+		},
+		{
+			name: "Test byte to int-17",
+			args: args{
+				bytez: []byte{0x00, 0x00, 0x01, 0x01},
+			},
+			want: 257,
+		},
+		{
+			name: "Test byte to int-65793",
+			args: args{
+				bytez: []byte{0x00, 0x01, 0x01, 0x01},
+			},
+			want: 65_793, // 1<<16 + 1<<8 + 1<<0
 		},
 	}
 	for _, tt := range tests {
@@ -50,18 +63,38 @@ func TestByteToInt(t *testing.T) {
 
 func TestByteToInt64(t *testing.T) {
 	type args struct {
-		data []byte
+		bytez []byte
 	}
 	tests := []struct {
 		name string
 		args args
 		want int64
 	}{
-		// TODO: Add test cases.
+		{
+			name: "Test byte to int64-1",
+			args: args{
+				bytez: []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01},
+			},
+			want: 1,
+		},
+		{
+			name: "Test byte to int64-257",
+			args: args{
+				bytez: []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x01},
+			},
+			want: 257,
+		},
+		{
+			name: "Test byte to int64-65793",
+			args: args{
+				bytez: []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01},
+			},
+			want: 65_793,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := ByteToInt64(tt.args.data); got != tt.want {
+			if got := ByteToInt64(tt.args.bytez); got != tt.want {
 				t.Errorf("ByteToInt64() = %v, want %v", got, tt.want)
 			}
 		})
@@ -77,7 +110,20 @@ func TestByteToUInt16(t *testing.T) {
 		args args
 		want uint16
 	}{
-		// TODO: Add test cases.
+		{
+			name: "Test byte to uint16-1",
+			args: args{
+				bytez: []byte{0x00, 0x01},
+			},
+			want: 1,
+		},
+		{
+			name: "Test byte to uint16-257",
+			args: args{
+				bytez: []byte{0x01, 0x01},
+			},
+			want: 257,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -97,7 +143,20 @@ func TestByteToUInt32(t *testing.T) {
 		args args
 		want uint32
 	}{
-		// TODO: Add test cases.
+		{
+			name: "Test byte to uint32-1",
+			args: args{
+				bytez: []byte{0x00, 0x00, 0x00, 0x01},
+			},
+			want: 1,
+		},
+		{
+			name: "Test byte to uint32-257",
+			args: args{
+				bytez: []byte{0x00, 0x00, 0x01, 0x01},
+			},
+			want: 257,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -117,7 +176,27 @@ func TestByteToUInt64(t *testing.T) {
 		args args
 		want uint64
 	}{
-		// TODO: Add test cases.
+		{
+			name: "Test byte to uint64-1",
+			args: args{
+				bytez: []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01},
+			},
+			want: 1,
+		},
+		{
+			name: "Test byte to uint64-257",
+			args: args{
+				bytez: []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x01},
+			},
+			want: 257,
+		},
+		{
+			name: "Test byte to uint64-65793",
+			args: args{
+				bytez: []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01},
+			},
+			want: 65_793,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -137,7 +216,27 @@ func TestInt64ToBytes(t *testing.T) {
 		args args
 		want []byte
 	}{
-		// TODO: Add test cases.
+		{
+			name: "Test int64 to byte-1",
+			args: args{
+				v: 1,
+			},
+			want: []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01},
+		},
+		{
+			name: "Test int64 to byte-257",
+			args: args{
+				v: 257,
+			},
+			want: []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x01},
+		},
+		{
+			name: "Test int64 to byte-65793",
+			args: args{
+				v: 65_793,
+			},
+			want: []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -157,11 +256,20 @@ func TestInt64ToBytez(t *testing.T) {
 		name string
 		args args
 	}{
-		// TODO: Add test cases.
+		{
+			name: "Test int64 to byte-1",
+			args: args{
+				v:     1,
+				bytez: make([]byte, 8),
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			Int64ToBytez(tt.args.v, tt.args.bytez)
+			if got := ByteToInt64(tt.args.bytez); got != tt.args.v {
+				t.Errorf("ByteToInt64() = %v, want %v", got, tt.args.v)
+			}
 		})
 	}
 }
@@ -175,7 +283,27 @@ func TestIntToBytes(t *testing.T) {
 		args args
 		want []byte
 	}{
-		// TODO: Add test cases.
+		{
+			name: "Test int to bytes-1",
+			args: args{
+				v: 1,
+			},
+			want: []byte{0x00, 0x00, 0x00, 0x01},
+		},
+		{
+			name: "Test int to bytes-257",
+			args: args{
+				v: 257,
+			},
+			want: []byte{0x00, 0x00, 0x01, 0x01},
+		},
+		{
+			name: "Test int to bytes-65793",
+			args: args{
+				v: 65_793,
+			},
+			want: []byte{0x00, 0x01, 0x01, 0x01},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -195,11 +323,20 @@ func TestIntToBytez(t *testing.T) {
 		name string
 		args args
 	}{
-		// TODO: Add test cases.
+		{
+			name: "Test int to bytez-65793",
+			args: args{
+				v:     65_793,
+				bytez: make([]byte, 4),
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			IntToBytez(tt.args.v, tt.args.bytez)
+			if got := ByteToInt(tt.args.bytez); got != tt.args.v {
+				t.Errorf("ByteToInt() = %v, want %v", got, tt.args.v)
+			}
 		})
 	}
 }
@@ -213,7 +350,13 @@ func TestUint16ToBytes(t *testing.T) {
 		args args
 		want []byte
 	}{
-		// TODO: Add test cases.
+		{
+			name: "Test uint16 to bytes-257",
+			args: args{
+				v: 257,
+			},
+			want: []byte{0x01, 0x01},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -233,11 +376,20 @@ func TestUint16ToBytez(t *testing.T) {
 		name string
 		args args
 	}{
-		// TODO: Add test cases.
+		{
+			name: "Test uint16 to bytes-257",
+			args: args{
+				v:     257,
+				bytez: make([]byte, 2),
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			Uint16ToBytez(tt.args.v, tt.args.bytez)
+			if got := ByteToUInt16(tt.args.bytez); got != tt.args.v {
+				t.Errorf("ByteToUInt16() = %v, want %v", got, tt.args.v)
+			}
 		})
 	}
 }
@@ -251,7 +403,13 @@ func TestUint32ToBytes(t *testing.T) {
 		args args
 		want []byte
 	}{
-		// TODO: Add test cases.
+		{
+			name: "Test uint16 to bytes-65793",
+			args: args{
+				v: 65_793,
+			},
+			want: []byte{0x00, 0x01, 0x01, 0x01},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -271,11 +429,20 @@ func TestUint32ToBytez(t *testing.T) {
 		name string
 		args args
 	}{
-		// TODO: Add test cases.
+		{
+			name: "Test uint32 to bytes-257",
+			args: args{
+				v:     257,
+				bytez: make([]byte, 4),
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			Uint32ToBytez(tt.args.v, tt.args.bytez)
+			if got := ByteToUInt32(tt.args.bytez); got != tt.args.v {
+				t.Errorf("ByteToUInt32() = %v, want %v", got, tt.args.v)
+			}
 		})
 	}
 }
@@ -289,7 +456,13 @@ func TestUint64ToBytes(t *testing.T) {
 		args args
 		want []byte
 	}{
-		// TODO: Add test cases.
+		{
+			name: "Test uint64 to bytes-65793",
+			args: args{
+				v: 65_793,
+			},
+			want: []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -309,11 +482,20 @@ func TestUint64ToBytez(t *testing.T) {
 		name string
 		args args
 	}{
-		// TODO: Add test cases.
+		{
+			name: "Test uint64 to bytes-65793",
+			args: args{
+				v:     65_793,
+				bytez: make([]byte, 8),
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			Uint64ToBytez(tt.args.v, tt.args.bytez)
+			if got := ByteToUInt64(tt.args.bytez); got != tt.args.v {
+				t.Errorf("ByteToUInt64() = %v, want %v", got, tt.args.v)
+			}
 		})
 	}
 }
@@ -321,18 +503,25 @@ func TestUint64ToBytez(t *testing.T) {
 func Test_bytebuf_Capacity(t *testing.T) {
 	type fields struct {
 		capacity    int
-		pool        Pool
-		buf         *bytes.Buffer
+		pool        BufferPool
+		buf         bytez
 		readerIndex int
 		writerIndex int
 		markedIndex int
 	}
+
 	tests := []struct {
 		name   string
 		fields fields
 		want   int
 	}{
-		// TODO: Add test cases.
+		{
+			name: "Test bytebuf capacity",
+			fields: fields{
+				capacity: 8,
+			},
+			want: 8,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -354,8 +543,8 @@ func Test_bytebuf_Capacity(t *testing.T) {
 func Test_bytebuf_Read(t *testing.T) {
 	type fields struct {
 		capacity    int
-		pool        Pool
-		buf         *bytes.Buffer
+		pool        BufferPool
+		buf         bytez
 		readerIndex int
 		writerIndex int
 		markedIndex int
@@ -397,8 +586,8 @@ func Test_bytebuf_Read(t *testing.T) {
 func Test_bytebuf_ReadInt(t *testing.T) {
 	type fields struct {
 		capacity    int
-		pool        Pool
-		buf         *bytes.Buffer
+		pool        BufferPool
+		buf         bytez
 		readerIndex int
 		writerIndex int
 		markedIndex int
@@ -436,8 +625,8 @@ func Test_bytebuf_ReadInt(t *testing.T) {
 func Test_bytebuf_Readable(t *testing.T) {
 	type fields struct {
 		capacity    int
-		pool        Pool
-		buf         *bytes.Buffer
+		pool        BufferPool
+		buf         bytez
 		readerIndex int
 		writerIndex int
 		markedIndex int
@@ -469,8 +658,8 @@ func Test_bytebuf_Readable(t *testing.T) {
 func Test_bytebuf_Release(t *testing.T) {
 	type fields struct {
 		capacity    int
-		pool        Pool
-		buf         *bytes.Buffer
+		pool        BufferPool
+		buf         bytez
 		readerIndex int
 		writerIndex int
 		markedIndex int
@@ -499,8 +688,8 @@ func Test_bytebuf_Release(t *testing.T) {
 func Test_bytebuf_Resume(t *testing.T) {
 	type fields struct {
 		capacity    int
-		pool        Pool
-		buf         *bytes.Buffer
+		pool        BufferPool
+		buf         bytez
 		readerIndex int
 		writerIndex int
 		markedIndex int
@@ -529,8 +718,8 @@ func Test_bytebuf_Resume(t *testing.T) {
 func Test_bytebuf_Write(t *testing.T) {
 	type fields struct {
 		capacity    int
-		pool        Pool
-		buf         *bytes.Buffer
+		pool        BufferPool
+		buf         bytez
 		readerIndex int
 		writerIndex int
 		markedIndex int
@@ -572,8 +761,8 @@ func Test_bytebuf_Write(t *testing.T) {
 func Test_bytebuf_WriteInt(t *testing.T) {
 	type fields struct {
 		capacity    int
-		pool        Pool
-		buf         *bytes.Buffer
+		pool        BufferPool
+		buf         bytez
 		readerIndex int
 		writerIndex int
 		markedIndex int
@@ -615,8 +804,8 @@ func Test_bytebuf_WriteInt(t *testing.T) {
 func Test_bytebuf_Writeable(t *testing.T) {
 	type fields struct {
 		capacity    int
-		pool        Pool
-		buf         *bytes.Buffer
+		pool        BufferPool
+		buf         bytez
 		readerIndex int
 		writerIndex int
 		markedIndex int

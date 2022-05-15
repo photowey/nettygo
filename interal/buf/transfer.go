@@ -35,15 +35,15 @@ func ByteToInt(bytez []byte) int {
 		(int(bytez[3]) & 0xff)
 }
 
-func ByteToInt64(data []byte) int64 {
-	return (int64(data[0])&0xff)<<56 |
-		(int64(data[1])&0xff)<<48 |
-		(int64(data[2])&0xff)<<40 |
-		(int64(data[3])&0xff)<<32 |
-		(int64(data[4])&0xff)<<24 |
-		(int64(data[5])&0xff)<<16 |
-		(int64(data[6])&0xff)<<8 |
-		(int64(data[7]) & 0xff)
+func ByteToInt64(bytez []byte) int64 {
+	return (int64(bytez[0])&0xff)<<56 |
+		(int64(bytez[1])&0xff)<<48 |
+		(int64(bytez[2])&0xff)<<40 |
+		(int64(bytez[3])&0xff)<<32 |
+		(int64(bytez[4])&0xff)<<24 |
+		(int64(bytez[5])&0xff)<<16 |
+		(int64(bytez[6])&0xff)<<8 |
+		(int64(bytez[7]) & 0xff)
 }
 
 func ByteToUInt16(bytez []byte) uint16 {
