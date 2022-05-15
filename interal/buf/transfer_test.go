@@ -502,18 +502,18 @@ func TestUint64ToBytez(t *testing.T) {
 
 func Test_bytebuf_Capacity(t *testing.T) {
 	type fields struct {
-		capacity    int
-		pool        BufferPool
+		capacity    uint
+		pool        Pool
 		buf         bytez
-		readerIndex int
-		writerIndex int
-		markedIndex int
+		readerIndex uint
+		writerIndex uint
+		markedIndex uint
 	}
 
 	tests := []struct {
 		name   string
 		fields fields
-		want   int
+		want   uint
 	}{
 		{
 			name: "Test bytebuf capacity",
@@ -542,12 +542,12 @@ func Test_bytebuf_Capacity(t *testing.T) {
 
 func Test_bytebuf_Read(t *testing.T) {
 	type fields struct {
-		capacity    int
-		pool        BufferPool
+		capacity    uint
+		pool        Pool
 		buf         bytez
-		readerIndex int
-		writerIndex int
-		markedIndex int
+		readerIndex uint
+		writerIndex uint
+		markedIndex uint
 	}
 	type args struct {
 		bytes []byte
@@ -585,12 +585,12 @@ func Test_bytebuf_Read(t *testing.T) {
 
 func Test_bytebuf_ReadInt(t *testing.T) {
 	type fields struct {
-		capacity    int
-		pool        BufferPool
+		capacity    uint
+		pool        Pool
 		buf         bytez
-		readerIndex int
-		writerIndex int
-		markedIndex int
+		readerIndex uint
+		writerIndex uint
+		markedIndex uint
 	}
 	tests := []struct {
 		name    string
@@ -624,17 +624,17 @@ func Test_bytebuf_ReadInt(t *testing.T) {
 
 func Test_bytebuf_Readable(t *testing.T) {
 	type fields struct {
-		capacity    int
-		pool        BufferPool
+		capacity    uint
+		pool        Pool
 		buf         bytez
-		readerIndex int
-		writerIndex int
-		markedIndex int
+		readerIndex uint
+		writerIndex uint
+		markedIndex uint
 	}
 	tests := []struct {
 		name   string
 		fields fields
-		want   int
+		want   uint
 	}{
 		// TODO: Add test cases.
 	}
@@ -657,12 +657,12 @@ func Test_bytebuf_Readable(t *testing.T) {
 
 func Test_bytebuf_Release(t *testing.T) {
 	type fields struct {
-		capacity    int
-		pool        BufferPool
+		capacity    uint
+		pool        Pool
 		buf         bytez
-		readerIndex int
-		writerIndex int
-		markedIndex int
+		readerIndex uint
+		writerIndex uint
+		markedIndex uint
 	}
 	tests := []struct {
 		name   string
@@ -687,12 +687,12 @@ func Test_bytebuf_Release(t *testing.T) {
 
 func Test_bytebuf_Resume(t *testing.T) {
 	type fields struct {
-		capacity    int
-		pool        BufferPool
+		capacity    uint
+		pool        Pool
 		buf         bytez
-		readerIndex int
-		writerIndex int
-		markedIndex int
+		readerIndex uint
+		writerIndex uint
+		markedIndex uint
 	}
 	tests := []struct {
 		name   string
@@ -717,12 +717,12 @@ func Test_bytebuf_Resume(t *testing.T) {
 
 func Test_bytebuf_Write(t *testing.T) {
 	type fields struct {
-		capacity    int
-		pool        BufferPool
+		capacity    uint
+		pool        Pool
 		buf         bytez
-		readerIndex int
-		writerIndex int
-		markedIndex int
+		readerIndex uint
+		writerIndex uint
+		markedIndex uint
 	}
 	type args struct {
 		bytes []byte
@@ -760,12 +760,12 @@ func Test_bytebuf_Write(t *testing.T) {
 
 func Test_bytebuf_WriteInt(t *testing.T) {
 	type fields struct {
-		capacity    int
-		pool        BufferPool
+		capacity    uint
+		pool        Pool
 		buf         bytez
-		readerIndex int
-		writerIndex int
-		markedIndex int
+		readerIndex uint
+		writerIndex uint
+		markedIndex uint
 	}
 	type args struct {
 		v int
@@ -803,17 +803,17 @@ func Test_bytebuf_WriteInt(t *testing.T) {
 
 func Test_bytebuf_Writeable(t *testing.T) {
 	type fields struct {
-		capacity    int
-		pool        BufferPool
+		capacity    uint
+		pool        Pool
 		buf         bytez
-		readerIndex int
-		writerIndex int
-		markedIndex int
+		readerIndex uint
+		writerIndex uint
+		markedIndex uint
 	}
 	tests := []struct {
 		name   string
 		fields fields
-		want   int
+		want   uint
 	}{
 		// TODO: Add test cases.
 	}

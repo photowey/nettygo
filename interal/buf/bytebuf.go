@@ -16,12 +16,21 @@
 
 package buf
 
-import (
-	"bytes"
-)
-
 var _ ByteBuf = (*bytebuf)(nil)
 
+type bytez = []byte
+
+// ByteBuf a buf with byte arrays
+/*
+ * <pre>
+ *      +-------------------+------------------+------------------+
+ *      | discardable bytes |  readable bytes  |  writable bytes  |
+ *      |                   |     (CONTENT)    |                  |
+ *      +-------------------+------------------+------------------+
+ *      |                   |                  |                  |
+ *      0      <=      readerIndex   <=   writerIndex    <=    capacity
+ * </pre>
+ */
 type ByteBuf interface {
 	Read(bytes []byte) (n int, err error)
 	ReadInt() (int, error)
@@ -29,32 +38,27 @@ type ByteBuf interface {
 	Write(bytes []byte) (int, error)
 	WriteInt(v int) (n int, err error)
 
-	Capacity() int
+	Capacity() uint
 	// Readable Returns the number of readable bytes which is equal to
 	//
 	// buf.writerIndex - buf.readerIndex
-	Readable() int
+	Readable() uint
 	// Writeable Returns the number of writable bytes which is equal to
 	//
 	// this.capacity - this.writerIndex
-	Writeable() int
+	Writeable() uint
 
 	Release()
 	Resume()
 }
 
-type Pool interface {
-	Alloc(int) []byte
-	Free([]byte)
-}
-
 type bytebuf struct {
-	capacity    int
+	capacity    uint
 	pool        Pool
-	buf         *bytes.Buffer
-	readerIndex int
-	writerIndex int
-	markedIndex int
+	buf         bytez
+	readerIndex uint
+	writerIndex uint
+	markedIndex uint
 }
 
 func (buf *bytebuf) Read(bytes []byte) (n int, err error) {
@@ -77,22 +81,39 @@ func (buf *bytebuf) WriteInt(v int) (n int, err error) {
 	return 0, nil
 }
 
-func (buf *bytebuf) Capacity() int {
-	return len(buf.buf.Bytes())
+func (buf *bytebuf) Capacity() uint {
+	return uint(len(buf.buf))
 }
 
-func (buf *bytebuf) Readable() int {
+func (buf *bytebuf) Readable() uint {
 	return buf.writerIndex - buf.readerIndex
 }
 
-func (buf *bytebuf) Writeable() int {
+func (buf *bytebuf) Writeable() uint {
 	return buf.Capacity() - buf.writerIndex
 }
 
 func (buf *bytebuf) Release() {
-	buf.pool.Free(buf.buf.Bytes())
+	buf.pool.Free(buf.buf)
 }
 
 func (buf *bytebuf) Resume() {
-	buf.buf = bytes.NewBuffer(buf.pool.Alloc(buf.capacity))
+	buf.buf = buf.pool.Alloc(buf.capacity)
+}
+
+func NewByteBuf(capacity uint, pools ...Pool) ByteBuf {
+	buff := &bytebuf{
+		capacity:    capacity,
+		readerIndex: 0,
+		writerIndex: 0,
+	}
+
+	if len(pools) == 0 {
+		buff.pool = GetDefaultPoolInstance()
+	} else {
+		buff.pool = pools[0]
+	}
+	buff.buf = buff.pool.Alloc(capacity)
+
+	return buff
 }
