@@ -22,9 +22,9 @@ import (
 )
 
 const (
-	DefaultMinBufferSize = 32 * Byte // 32 * 8 = 256
+	DefaultMinBufferSize = 256 * Byte
 	DefaultMaxBufferSize = 64 * MB
-	DefaultFactor        = 2
+	DefaultFactor        = 8 * Byte
 )
 
 var (

@@ -19,7 +19,7 @@ package buf
 const (
 	Bit  = 1
 	Byte = 8 * Bit
-	KB   = 1024 * Bit
+	KB   = 1024 * Byte
 	MB   = 1024 * KB
 	GB   = 1024 * MB
 )
