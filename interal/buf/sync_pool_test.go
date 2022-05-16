@@ -18,10 +18,33 @@ package buf
 
 import (
 	"runtime"
+	"sync"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
+
+func TestSyncPool(t *testing.T) {
+	proxy := assert.New(t)
+
+	pool := &sync.Pool{
+		New: func() interface{} {
+			t.Log("create a new object")
+			return 1024
+		},
+	}
+	v := pool.Get().(int)
+	proxy.Equal(1024, v)
+
+	pool.Put(9527)
+	v = pool.Get().(int)
+	proxy.Equal(9527, v)
+
+	runtime.GC()
+
+	v = pool.Get().(int)
+	proxy.Equal(1024, v)
+}
 
 func Test_syncPool_Alloc_Smaller(t *testing.T) {
 	proxy := assert.New(t)
