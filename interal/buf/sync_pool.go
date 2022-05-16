@@ -24,7 +24,7 @@ import (
 const (
 	DefaultMinBufferSize = 256 * Byte
 	DefaultMaxBufferSize = 64 * MB
-	DefaultFactor        = 8 * Byte
+	DefaultFactor        = 2
 )
 
 var (
@@ -39,6 +39,9 @@ type (
 	sizes     = []uint
 )
 
+// syncPool - wrap of sync.Pool
+//
+// runtime.GC
 type syncPool struct {
 	classes     syncPools // slab class
 	classesSize sizes
@@ -57,7 +60,7 @@ func (pool *syncPool) Alloc(expectSize uint) []byte {
 		}
 	}
 
-	return make(bytez, expectSize)
+	return make(bytez, expectSize) // direct alloc
 }
 
 func (pool *syncPool) Free(mem bytez) {

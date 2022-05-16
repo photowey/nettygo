@@ -31,12 +31,12 @@ func (pool *bufPool) Alloc(expectSize uint) []byte {
 				if len(mem.buf) == 0 {
 					// the mem maybe the default value by New BufferedPool
 					return make(bytez, expectSize)
-				}
+				} // make new
 
 				return (mem.buf)[:expectSize]
-			}
+			} // make new
 		}
-	}
+	} // make new
 
 	return make(bytez, expectSize)
 }
