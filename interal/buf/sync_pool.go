@@ -78,11 +78,14 @@ func (pool *syncPool) Free(mem bytez) {
 // ---------------------------------------------------------------- export
 
 func NewSyncPool(min, max, factor uint) (Pool, error) {
-	if min%factor != 0 {
-		return nil, fmt.Errorf("the min value must be an integer multiple of factor:%d", factor)
+	if min%2 != 0 {
+		return nil, fmt.Errorf("the min value must be an integer multiple of 2:%d", min)
 	}
-	if max%factor != 0 {
-		return nil, fmt.Errorf("the max value must be an integer multiple of factor:%d", factor)
+	if max%2 != 0 {
+		return nil, fmt.Errorf("the max value must be an integer multiple of 2:%d", max)
+	}
+	if max%min != 0 {
+		return nil, fmt.Errorf("the max value must be an integer multiple of min:%d", min)
 	}
 
 	block := 0

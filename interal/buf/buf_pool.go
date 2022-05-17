@@ -16,8 +16,12 @@
 
 package buf
 
+import (
+	"fmt"
+)
+
 type bufPool struct {
-	classes     []BufferedPool
+	classes     []*BufferedPool
 	classesSize sizes
 	min         uint
 	max         uint
@@ -53,26 +57,43 @@ func (pool *bufPool) Free(mem bytez) {
 	}
 }
 
-func NewBufPool(min, max, factor uint) Pool {
-	block := 0
+func NewBufPool(min, max, factor uint) (Pool, error) {
+	if min%2 != 0 {
+		return nil, fmt.Errorf("the min value must be an integer multiple of 2:%d", min)
+	}
+	if max%2 != 0 {
+		return nil, fmt.Errorf("the max value must be an integer multiple of 2:%d", max)
+	}
+	if max%min != 0 {
+		return nil, fmt.Errorf("the max value must be an integer multiple of min:%d", min)
+	}
+
+	block := uint(0)
 	for chunkSize := min; chunkSize <= max; chunkSize *= factor {
 		block++
 	}
 
 	pool := &bufPool{
-		make([]BufferedPool, block),
-		make(sizes, block),
-		min,
-		max,
+		classes:     make([]*BufferedPool, block),
+		classesSize: make(sizes, block),
+		min:         min,
+		max:         max,
 	}
 
-	block = 0
+	index := 0
 	for chunkSize := min; chunkSize <= max; chunkSize *= factor {
-		pool.classesSize[block] = chunkSize
+		newPool := NewBufferedPool(block, chunkSize)
+		pool.classes[index] = newPool
+
+		pool.classesSize[index] = chunkSize
 		buf := NewBufferBySize(chunkSize)
-		pool.classes[block].bufCh <- buf
-		block++
+
+		go func(idx int, buff *Buffer) {
+			pool.classes[idx].bufCh <- buff
+		}(index, buf)
+
+		index++
 	}
 
-	return pool
+	return pool, nil
 }

@@ -63,12 +63,12 @@ func NewBufferByBuf(buf []byte) *Buffer {
 	}
 }
 
-func NewBufferedPool(bufferedSize int) *BufferedPool {
+func NewBufferedPool(chSize uint, bufSize uint) *BufferedPool {
 	pool := &BufferedPool{
-		bufCh: make(chan *Buffer, bufferedSize),
+		bufCh: make(chan *Buffer, chSize),
 	}
-	for i := 0; i < bufferedSize; i++ {
-		pool.bufCh <- NewBuffer()
+	for i := uint(0); i < chSize; i++ {
+		pool.bufCh <- NewBufferBySize(bufSize)
 	}
 
 	return pool
