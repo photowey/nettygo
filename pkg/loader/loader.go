@@ -22,6 +22,10 @@ import (
 	"github.com/spf13/viper"
 )
 
+const (
+	EnvKeyPrefix = "NETTYGO"
+)
+
 // Load a func load config form fs by viper[github](https://github.com/spf13/viper).
 //
 // @param fileName the target config file's name
@@ -30,7 +34,7 @@ import (
 //
 // @param dst the target struct of decode
 //
-// @param paths search paths
+// @param searchPath search paths
 //
 /*
 	viper.SetConfigName("config") // name of config file (without extension)
@@ -41,11 +45,11 @@ import (
 	err := viper.ReadInConfig() // Find and read the config file
 ...
 */
-func Load(fileName, fileType string, dst any, pathList ...string) error {
+func Load(fileName, fileType string, dst any, searchPath ...string) error {
 	viper.SetConfigName(fileName)
 	viper.SetConfigType(fileType)
-	viper.SetEnvPrefix("author")
-	for _, path := range pathList {
+	viper.SetEnvPrefix(EnvKeyPrefix)
+	for _, path := range searchPath {
 		viper.AddConfigPath(path)
 	}
 

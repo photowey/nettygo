@@ -27,7 +27,7 @@ type bufPool struct {
 	max         uint
 }
 
-func (pool *bufPool) Alloc(expectSize uint) []byte {
+func (pool *bufPool) Alloc(expectSize uint) bytez {
 	if expectSize <= pool.max {
 		for i := 0; i < len(pool.classesSize); i++ {
 			if pool.classesSize[i] >= expectSize {
@@ -49,7 +49,7 @@ func (pool *bufPool) Free(mem bytez) {
 	if size := uint(cap(mem)); size <= pool.max {
 		for i := 0; i < len(pool.classesSize); i++ {
 			if pool.classesSize[i] >= size {
-				_ = pool.classes[i].Release(NewBufferByBuf(mem))
+				_ = pool.classes[i].Release(mem)
 
 				return
 			}

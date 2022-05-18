@@ -16,10 +16,6 @@
 
 package buf
 
-import (
-	"errors"
-)
-
 type Buffer struct {
 	buf []byte
 }
@@ -36,12 +32,18 @@ func (pool *BufferedPool) Acquire() *Buffer {
 	}
 }
 
-func (pool *BufferedPool) Release(buf *Buffer) error {
+func (pool *BufferedPool) Release(mem []byte) error {
+	buf := NewBufferByBuf(mem)
 	select {
 	case pool.bufCh <- buf:
 		return nil
 	default:
-		return errors.New("buffered channel overflow")
+		// return errors.New("buffered channel overflow")
+		// overflow -> discard this mem
+
+		buf = nil // Help GC?
+
+		return nil
 	}
 }
 

@@ -17,6 +17,6 @@
 package buf
 
 type Pool interface {
-	Alloc(uint) []byte
+	Alloc(uint) bytez
 	Free(bytez)
 }
