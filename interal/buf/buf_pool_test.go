@@ -22,7 +22,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_bufPool_Alloc(t *testing.T) {
+func Test_bufPool_Alloc_Smaller(t *testing.T) {
 	proxy := assert.New(t)
 
 	pool, _ := NewBufPool(64, 1024, 2)
@@ -41,4 +41,26 @@ func Test_bufPool_Alloc(t *testing.T) {
 	proxy.Equal(128, len(mem))
 	proxy.Equal(128, cap(mem))
 	pool.Free(mem)
+}
+
+func Test_bufPool_Alloc_Larger(t *testing.T) {
+	proxy := assert.New(t)
+
+	pool, _ := NewBufPool(64, 1024, 2)
+
+	mem := pool.Alloc(2048) // 2048 > 1024
+	proxy.Equal(2048, len(mem))
+	proxy.Equal(2048, cap(mem))
+	pool.Free(mem)
+}
+
+func BenchmarkBufPool_Alloc_64(b *testing.B) {
+	pool, _ := NewBufPool(64, 1024, 2)
+
+	b.ResetTimer()
+	b.RunParallel(func(pb *testing.PB) {
+		for pb.Next() {
+			pool.Free(pool.Alloc(64))
+		}
+	})
 }
