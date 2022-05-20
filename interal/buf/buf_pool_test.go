@@ -22,6 +22,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+// -------------------------------------------------------------------------------- smaller
+
 func Test_bufPool_Alloc_Smaller(t *testing.T) {
 	proxy := assert.New(t)
 
@@ -43,6 +45,8 @@ func Test_bufPool_Alloc_Smaller(t *testing.T) {
 	pool.Free(mem)
 }
 
+// -------------------------------------------------------------------------------- larger
+
 func Test_bufPool_Alloc_Larger(t *testing.T) {
 	proxy := assert.New(t)
 
@@ -54,6 +58,8 @@ func Test_bufPool_Alloc_Larger(t *testing.T) {
 	pool.Free(mem)
 }
 
+// -------------------------------------------------------------------------------- buf_pool
+
 func BenchmarkBufPool_Alloc_64(b *testing.B) {
 	pool, _ := NewBufPool(64, 1024, 2)
 
@@ -61,6 +67,39 @@ func BenchmarkBufPool_Alloc_64(b *testing.B) {
 	b.RunParallel(func(pb *testing.PB) {
 		for pb.Next() {
 			pool.Free(pool.Alloc(64))
+		}
+	})
+}
+
+func BenchmarkBufPool_Alloc_128(b *testing.B) {
+	pool, _ := NewBufPool(64, 1024, 2)
+
+	b.ResetTimer()
+	b.RunParallel(func(pb *testing.PB) {
+		for pb.Next() {
+			pool.Free(pool.Alloc(128))
+		}
+	})
+}
+
+func BenchmarkBufPool_Alloc_256(b *testing.B) {
+	pool, _ := NewBufPool(64, 1024, 2)
+
+	b.ResetTimer()
+	b.RunParallel(func(pb *testing.PB) {
+		for pb.Next() {
+			pool.Free(pool.Alloc(256))
+		}
+	})
+}
+
+func BenchmarkBufPool_Alloc_512(b *testing.B) {
+	pool, _ := NewBufPool(64, 1024, 2)
+
+	b.ResetTimer()
+	b.RunParallel(func(pb *testing.PB) {
+		for pb.Next() {
+			pool.Free(pool.Alloc(512))
 		}
 	})
 }
