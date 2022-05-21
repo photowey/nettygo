@@ -14,44 +14,26 @@
  * limitations under the License.
  */
 
-package channel
+package filepathz
 
-var _ Channel = (*channel)(nil)
+import (
+	"os"
+)
 
-type Channel interface {
-	Id() Id
-	Parent() Channel
-	Config() Config
-	Read() Channel
-	Flush() Channel
-	Pipeline() Pipeline
+func Exists(path string) bool {
+	_, err := os.Stat(path)
+
+	return err != nil || os.IsExist(err)
 }
 
-type channel struct {
-	id       Id
-	pipeline Pipeline
-}
+func FileExists(path string) bool {
+	stat, err := os.Stat(path)
+	if err == nil {
+		return !stat.IsDir()
+	}
+	if os.IsNotExist(err) {
+		return false
+	}
 
-func (c *channel) Id() Id {
-	return nil
-}
-
-func (c *channel) Parent() Channel {
-	return nil
-}
-
-func (c *channel) Config() Config {
-	return Config{}
-}
-
-func (c *channel) Read() Channel {
-	return c
-}
-
-func (c *channel) Flush() Channel {
-	return c
-}
-
-func (c *channel) Pipeline() Pipeline {
-	return c.pipeline
+	return false
 }

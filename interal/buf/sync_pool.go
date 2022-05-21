@@ -19,11 +19,13 @@ package buf
 import (
 	"fmt"
 	"sync"
+
+	"github.com/photowey/nettygo/interal/byteunit"
 )
 
 const (
-	DefaultMinBufferSize = 256 * Byte
-	DefaultMaxBufferSize = 64 * MB
+	DefaultMinBufferSize = 256 * byteunit.Byte
+	DefaultMaxBufferSize = 64 * byteunit.MB
 	DefaultFactor        = 2
 )
 

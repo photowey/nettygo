@@ -20,7 +20,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/photowey/nettygo/interal/helper"
+	"github.com/photowey/nettygo/interal/utilz/expression"
+	"github.com/photowey/nettygo/interal/utilz/filepathz"
 	"github.com/photowey/perrors"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -80,10 +81,10 @@ func populateLoggerEncoder(config Config) zapcore.Encoder {
 }
 
 func populateLoggerWriter(conf Config) (zapcore.WriteSyncer, error) {
-	conf.Path, _ = helper.Match(emptyString == conf.Path, conf.Path, defaultPath).(string)
-	conf.FileName, _ = helper.Match(emptyString == conf.FileName, conf.FileName, defaultFileName).(string)
+	conf.Path = expression.TrinaryOperationString(emptyString == conf.Path, conf.Path, defaultPath)
+	conf.FileName = expression.TrinaryOperationString(emptyString == conf.FileName, conf.FileName, defaultFileName)
 
-	if exist := helper.IsExist(conf.Path); !exist {
+	if exist := filepathz.Exists(conf.Path); !exist {
 		if err := os.MkdirAll(conf.Path, os.ModePerm); err != nil {
 			return nil, err
 		}
