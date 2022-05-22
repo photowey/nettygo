@@ -59,13 +59,41 @@ func Test_channelId_LongText(t *testing.T) {
 	}
 }
 
-func javaByteToGoByte(r rune) byte {
-	if r < -128 || r > 127 {
-		panic("out of range")
+func Test_channelId_ShortText(t *testing.T) {
+	type fields struct {
+		data       [28]byte
+		shortValue string
+		longValue  string
 	}
-	if r < 0 {
-		return byte(256 + r)
+	tests := []struct {
+		name   string
+		fields fields
+		want   string
+	}{
+		{
+			name: "Test shortText()",
+			fields: fields{
+				data: [28]byte{
+					0, 80, 86, 255, 254, 192, 0, 1, // merchantId
+					0, 0, 42, 120, // processId
+					0, 0, 0, 0, // sequence
+					24, 134, 160, 193, 56, 156, 198, 130, // timestamp
+					210, 208, 178, 175, // random
+				},
+			},
+			want: "d2d0b2af",
+		},
 	}
-
-	return byte(r)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			chId := &channelId{
+				data:       tt.fields.data,
+				shortValue: tt.fields.shortValue,
+				longValue:  tt.fields.longValue,
+			}
+			if got := chId.ShortText(); got != tt.want {
+				t.Errorf("ShortText() = %v, want %v", got, tt.want)
+			}
+		})
+	}
 }
