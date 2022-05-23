@@ -71,7 +71,7 @@ func TrinaryOperationInt8(expression bool, standard, standBy int8) int8 {
 	return standBy
 }
 
-// ----------------------------------------------------------------
+// ---------------------------------------------------------------- uint
 
 func TrinaryOperationUInt64(expression bool, standard, standBy uint64) uint64 {
 	if expression {

@@ -32,7 +32,33 @@ func TestTrinaryOperation(t *testing.T) {
 		args args
 		want any
 	}{
-		// TODO: Add test cases.
+		{
+			name: "Test TrinaryOperation-any-false",
+			args: args{
+				expression: 1 > 2,
+				standard:   1,
+				standBy:    2,
+			},
+			want: 2,
+		},
+		{
+			name: "Test TrinaryOperation-any-false",
+			args: args{
+				expression: 1 > 2,
+				standard:   1,
+				standBy:    "hello",
+			},
+			want: "hello",
+		},
+		{
+			name: "Test TrinaryOperation-any-true",
+			args: args{
+				expression: 1 < 2,
+				standard:   1,
+				standBy:    2,
+			},
+			want: 1,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -54,7 +80,24 @@ func TestTrinaryOperationFloat32(t *testing.T) {
 		args args
 		want float32
 	}{
-		// TODO: Add test cases.
+		{
+			name: "Test TrinaryOperation-float32-true",
+			args: args{
+				expression: 1 < 2,
+				standard:   1.000009,
+				standBy:    2.000001,
+			},
+			want: 1.000009,
+		},
+		{
+			name: "Test TrinaryOperation-float32-false",
+			args: args{
+				expression: 1 > 2,
+				standard:   1.000009,
+				standBy:    2.000001,
+			},
+			want: 2.000001,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -76,7 +119,24 @@ func TestTrinaryOperationFloat64(t *testing.T) {
 		args args
 		want float64
 	}{
-		// TODO: Add test cases.
+		{
+			name: "Test TrinaryOperation-float64-true",
+			args: args{
+				expression: 1 < 2,
+				standard:   1.000009,
+				standBy:    2.000001,
+			},
+			want: 1.000009,
+		},
+		{
+			name: "Test TrinaryOperation-float64-false",
+			args: args{
+				expression: 1 > 2,
+				standard:   1.000009,
+				standBy:    2.000001,
+			},
+			want: 2.000001,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -98,7 +158,24 @@ func TestTrinaryOperationInt(t *testing.T) {
 		args args
 		want int
 	}{
-		// TODO: Add test cases.
+		{
+			name: "Test TrinaryOperation-int-true",
+			args: args{
+				expression: 1 < 2,
+				standard:   1,
+				standBy:    2,
+			},
+			want: 1,
+		},
+		{
+			name: "Test TrinaryOperation-int-false",
+			args: args{
+				expression: 1 > 2,
+				standard:   1,
+				standBy:    2,
+			},
+			want: 2,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -120,7 +197,24 @@ func TestTrinaryOperationInt16(t *testing.T) {
 		args args
 		want int16
 	}{
-		// TODO: Add test cases.
+		{
+			name: "Test TrinaryOperation-int16-true",
+			args: args{
+				expression: 1 < 2,
+				standard:   1,
+				standBy:    2,
+			},
+			want: 1,
+		},
+		{
+			name: "Test TrinaryOperation-int16-false",
+			args: args{
+				expression: 1 > 2,
+				standard:   1,
+				standBy:    2,
+			},
+			want: 2,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -142,7 +236,24 @@ func TestTrinaryOperationInt32(t *testing.T) {
 		args args
 		want int32
 	}{
-		// TODO: Add test cases.
+		{
+			name: "Test TrinaryOperation-int32-true",
+			args: args{
+				expression: 1 < 2,
+				standard:   1,
+				standBy:    2,
+			},
+			want: 1,
+		},
+		{
+			name: "Test TrinaryOperation-int32-false",
+			args: args{
+				expression: 1 > 2,
+				standard:   1,
+				standBy:    2,
+			},
+			want: 2,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -164,7 +275,24 @@ func TestTrinaryOperationInt64(t *testing.T) {
 		args args
 		want int64
 	}{
-		// TODO: Add test cases.
+		{
+			name: "Test TrinaryOperation-int64-true",
+			args: args{
+				expression: 1 < 2,
+				standard:   1,
+				standBy:    2,
+			},
+			want: 1,
+		},
+		{
+			name: "Test TrinaryOperation-int64-false",
+			args: args{
+				expression: 1 > 2,
+				standard:   1,
+				standBy:    2,
+			},
+			want: 2,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -186,7 +314,24 @@ func TestTrinaryOperationInt8(t *testing.T) {
 		args args
 		want int8
 	}{
-		// TODO: Add test cases.
+		{
+			name: "Test TrinaryOperation-int8-true",
+			args: args{
+				expression: 1 < 2,
+				standard:   1,
+				standBy:    2,
+			},
+			want: 1,
+		},
+		{
+			name: "Test TrinaryOperation-int8-false",
+			args: args{
+				expression: 1 > 2,
+				standard:   1,
+				standBy:    2,
+			},
+			want: 2,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -208,7 +353,24 @@ func TestTrinaryOperationString(t *testing.T) {
 		args args
 		want string
 	}{
-		// TODO: Add test cases.
+		{
+			name: "Test TrinaryOperation-any-false",
+			args: args{
+				expression: 1 > 2,
+				standard:   "standard",
+				standBy:    "standBy",
+			},
+			want: "standBy",
+		},
+		{
+			name: "Test TrinaryOperation-string-true",
+			args: args{
+				expression: 1 < 2,
+				standard:   "standard",
+				standBy:    "standBy",
+			},
+			want: "standard",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -230,7 +392,24 @@ func TestTrinaryOperationUInt(t *testing.T) {
 		args args
 		want uint
 	}{
-		// TODO: Add test cases.
+		{
+			name: "Test TrinaryOperation-uint-true",
+			args: args{
+				expression: 1 < 2,
+				standard:   1,
+				standBy:    2,
+			},
+			want: 1,
+		},
+		{
+			name: "Test TrinaryOperation-uint-false",
+			args: args{
+				expression: 1 > 2,
+				standard:   1,
+				standBy:    2,
+			},
+			want: 2,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -252,7 +431,24 @@ func TestTrinaryOperationUInt16(t *testing.T) {
 		args args
 		want uint16
 	}{
-		// TODO: Add test cases.
+		{
+			name: "Test TrinaryOperation-uint16-true",
+			args: args{
+				expression: 1 < 2,
+				standard:   1,
+				standBy:    2,
+			},
+			want: 1,
+		},
+		{
+			name: "Test TrinaryOperation-uint16-false",
+			args: args{
+				expression: 1 > 2,
+				standard:   1,
+				standBy:    2,
+			},
+			want: 2,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -274,7 +470,24 @@ func TestTrinaryOperationUInt32(t *testing.T) {
 		args args
 		want uint32
 	}{
-		// TODO: Add test cases.
+		{
+			name: "Test TrinaryOperation-uint32-true",
+			args: args{
+				expression: 1 < 2,
+				standard:   1,
+				standBy:    2,
+			},
+			want: 1,
+		},
+		{
+			name: "Test TrinaryOperation-uint32-false",
+			args: args{
+				expression: 1 > 2,
+				standard:   1,
+				standBy:    2,
+			},
+			want: 2,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -296,7 +509,24 @@ func TestTrinaryOperationUInt64(t *testing.T) {
 		args args
 		want uint64
 	}{
-		// TODO: Add test cases.
+		{
+			name: "Test TrinaryOperation-uint64-true",
+			args: args{
+				expression: 1 < 2,
+				standard:   1,
+				standBy:    2,
+			},
+			want: 1,
+		},
+		{
+			name: "Test TrinaryOperation-uint64-false",
+			args: args{
+				expression: 1 > 2,
+				standard:   1,
+				standBy:    2,
+			},
+			want: 2,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -318,7 +548,24 @@ func TestTrinaryOperationUInt8(t *testing.T) {
 		args args
 		want uint8
 	}{
-		// TODO: Add test cases.
+		{
+			name: "Test TrinaryOperation-uint8-true",
+			args: args{
+				expression: 1 < 2,
+				standard:   1,
+				standBy:    2,
+			},
+			want: 1,
+		},
+		{
+			name: "Test TrinaryOperation-uint8-false",
+			args: args{
+				expression: 1 > 2,
+				standard:   1,
+				standBy:    2,
+			},
+			want: 2,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
