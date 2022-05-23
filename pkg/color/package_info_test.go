@@ -17,7 +17,5 @@
 package color
 
 //
-// This package copy from bee
-//
-// @link https://github.com/beego/bee
+// Copy from [bee](https://github.com/beego/bee)
 //
