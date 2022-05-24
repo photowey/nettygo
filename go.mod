@@ -3,6 +3,8 @@ module github.com/photowey/nettygo
 go 1.18
 
 require (
+	github.com/matoous/go-nanoid/v2 v2.0.0
+	github.com/photowey/eventbusgo v0.0.0-20220515090524-22c6d87d7896
 	github.com/photowey/perrors v0.0.0-20220508165437-b4a6c99304c8
 	github.com/spf13/viper v1.11.0
 	github.com/stretchr/testify v1.7.1
