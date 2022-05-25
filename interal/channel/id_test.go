@@ -17,7 +17,14 @@
 package channel
 
 import (
+	"encoding/hex"
+	"fmt"
+	"net"
+	"reflect"
+	"strings"
 	"testing"
+
+	"github.com/photowey/nettygo/interal/buf"
 )
 
 func Test_channelId_LongText(t *testing.T) {
@@ -96,4 +103,55 @@ func Test_channelId_ShortText(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestNewChannelId(t *testing.T) {
+	tests := []struct {
+		name string
+		want Id
+	}{
+		{
+			name: "Test new channel id",
+			want: &channelId{
+				sequence: 1,
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := NewChannelId()
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("NewChannelId() = %v, want %v", got, tt.want)
+			}
+
+			macAddrs, _ := MacAddrs()
+			for _, mac := range macAddrs {
+				macBytes := make([]byte, 8)
+				hexNum, _ := hex.DecodeString(strings.ReplaceAll(mac, ":", ""))
+				for i, hexVal := range hexNum {
+					macBytes[i+2] = hexVal
+				}
+				fmt.Println(macAddrs)
+				fmt.Println(buf.ByteToUInt64(macBytes))
+			}
+		})
+	}
+}
+
+func MacAddrs() (macs []string, err error) {
+	netInterfaces, err := net.Interfaces()
+	if err != nil {
+		return macs, err
+	}
+
+	for _, netInterface := range netInterfaces {
+		macAddr := netInterface.HardwareAddr.String()
+		if len(macAddr) == 0 {
+			continue
+		}
+
+		macs = append(macs, macAddr)
+	}
+
+	return macs, nil
 }

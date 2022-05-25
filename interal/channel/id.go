@@ -19,6 +19,8 @@ package channel
 import (
 	"encoding/hex"
 	"fmt"
+	"os"
+	"sync/atomic"
 )
 
 const (
@@ -27,9 +29,14 @@ const (
 	SequenceLength   = 4
 	TimestampLength  = 8
 	RandomLength     = 4
+
+	delta = 1
 )
 
-var _ Id = (*channelId)(nil)
+var (
+	_        Id = (*channelId)(nil)
+	sequence uint64
+)
 
 type Id interface {
 	ShortText() string
@@ -40,6 +47,20 @@ type channelId struct {
 	data       [28]byte // 8 + 4 + 4 + 8 + 4
 	shortValue string
 	longValue  string
+	sequence   uint64
+}
+
+func NewChannelId() Id {
+	data := [28]byte{}
+	processId := os.Getpid()
+
+	fmt.Println(processId)
+
+	sequenceNo := atomic.AddUint64(&sequence, delta)
+	return &channelId{
+		data:     data,
+		sequence: sequenceNo,
+	}
 }
 
 func (chId *channelId) ShortText() string {
@@ -52,6 +73,7 @@ func (chId *channelId) ShortText() string {
 /*
 	// 8 + 4 + 4 + 8 + 4
 	// 005056fffec00001-00002a78-00000000-1886a0c1389cc682-d2d0b2af
+	// merchantId-processId-sequence-timestamp-random
 	// d2d0b2af
 	//
 	// Java byte
