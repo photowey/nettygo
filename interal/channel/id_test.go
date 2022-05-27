@@ -17,8 +17,6 @@
 package channel
 
 import (
-	"fmt"
-	"reflect"
 	"testing"
 )
 
@@ -115,15 +113,8 @@ func TestNewChannelId(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := NewChannelId()
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("NewChannelId() = %v, want %v", got, tt.want)
-			}
-
-			macAddrs, _ := macAddress()
-			fmt.Println(macAddrs)
-			for _, mac := range macAddrs {
-				fmt.Println(macToInt64(mac))
-			}
+			t.Logf("the shortText:%s", got.ShortText())
+			t.Logf("the longText:%s", got.LongText())
 		})
 	}
 }

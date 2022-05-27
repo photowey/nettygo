@@ -44,7 +44,7 @@ const (
 
 var (
 	_        Id = (*channelId)(nil)
-	sequence uint64
+	sequence int32
 )
 
 type Id interface {
@@ -57,6 +57,7 @@ type channelId struct {
 	shortValue string
 	longValue  string
 	sequence   uint64
+	hashCode   uint
 }
 
 func init() {
@@ -65,24 +66,23 @@ func init() {
 
 func NewChannelId() Id {
 	data := [28]byte{}
-
-	idx := 0
-	merchantId := findMaxMacUInt64()
-	processId := os.Getpid()
-	timestamp := time.Now().UnixNano() / int64(time.Millisecond)
-	random := rand.Intn(maxRandom)
-
-	fmt.Println(idx)
-	fmt.Println(merchantId)
-	fmt.Println(processId)
-	fmt.Println(timestamp)
-	fmt.Println(random)
-
-	sequenceNo := atomic.AddUint64(&sequence, delta)
-	return &channelId{
-		data:     data,
-		sequence: sequenceNo,
+	id := &channelId{
+		data: data,
 	}
+	idx := 0
+	merchantId := findMaxMacInt64()                              // 8
+	processId := os.Getpid()                                     // 4
+	sequenceNo := atomic.AddInt32(&sequence, delta)              // 4
+	timestamp := time.Now().UnixNano() / int64(time.Millisecond) // 8
+	random := rand.Intn(maxRandom)                               // 4
+
+	idx = id.writeInt64(idx, merchantId)
+	idx = id.writeInt(idx, processId)
+	idx = id.writeInt(idx, int(sequenceNo))
+	idx = id.writeInt64(idx, timestamp)
+	idx = id.writeInt(idx, random)
+
+	return id
 }
 
 func (chId *channelId) ShortText() string {
@@ -131,6 +131,40 @@ func (chId *channelId) LongText() string {
 	return lv
 }
 
+func (chId *channelId) writeInt(idx, value int) int {
+	chId.data[idx] = byte(value >> 24)
+	idx += 1
+	chId.data[idx] = byte(value >> 16)
+	idx += 1
+	chId.data[idx] = byte(value >> 8)
+	idx += 1
+	chId.data[idx] = byte(value)
+	idx += 1
+
+	return idx
+}
+
+func (chId *channelId) writeInt64(idx int, value int64) int {
+	chId.data[idx] = byte(value >> 56)
+	idx += 1
+	chId.data[idx] = byte(value >> 48)
+	idx += 1
+	chId.data[idx] = byte(value >> 40)
+	idx += 1
+	chId.data[idx] = byte(value >> 32)
+	idx += 1
+	chId.data[idx] = byte(value >> 24)
+	idx += 1
+	chId.data[idx] = byte(value >> 16)
+	idx += 1
+	chId.data[idx] = byte(value >> 8)
+	idx += 1
+	chId.data[idx] = byte(value)
+	idx += 1
+
+	return idx
+}
+
 func dumpHexString(hexByte []byte) string {
 	hexStr := hex.EncodeToString(hexByte)
 
@@ -155,23 +189,23 @@ func macAddress() (macs []string, err error) {
 	return macs, nil
 }
 
-func macToInt64(mac string) uint64 {
+func macToInt64(mac string) int64 {
 	macBytes := make([]byte, 8)
 	hexNum, _ := hex.DecodeString(strings.ReplaceAll(mac, ":", ""))
 	for i, hexVal := range hexNum {
 		macBytes[i+2] = hexVal
 	}
 
-	return buf.ByteToUInt64(macBytes)
+	return buf.ByteToInt64(macBytes)
 }
 
-func findMaxMacUInt64() uint64 {
+func findMaxMacInt64() int64 {
 	macAddrs, _ := macAddress() // TODO ignore err now.
 	if len(macAddrs) == 0 {
 		return 0
 	}
 
-	macUInt64s := make([]uint64, 0)
+	macUInt64s := make([]int64, 0)
 	for _, mac := range macAddrs {
 		macUInt64 := macToInt64(mac)
 		macUInt64s = append(macUInt64s, macUInt64)
