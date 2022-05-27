@@ -19,8 +19,15 @@ package channel
 import (
 	"encoding/hex"
 	"fmt"
+	"math/rand"
+	"net"
 	"os"
+	"sort"
+	"strings"
 	"sync/atomic"
+	"time"
+
+	"github.com/photowey/nettygo/interal/buf"
 )
 
 const (
@@ -31,6 +38,8 @@ const (
 	RandomLength     = 4
 
 	delta = 1
+
+	maxRandom = 100_000_000
 )
 
 var (
@@ -50,11 +59,24 @@ type channelId struct {
 	sequence   uint64
 }
 
+func init() {
+	rand.Seed(time.Now().UnixNano())
+}
+
 func NewChannelId() Id {
 	data := [28]byte{}
-	processId := os.Getpid()
 
+	idx := 0
+	merchantId := findMaxMacUInt64()
+	processId := os.Getpid()
+	timestamp := time.Now().UnixNano() / int64(time.Millisecond)
+	random := rand.Intn(maxRandom)
+
+	fmt.Println(idx)
+	fmt.Println(merchantId)
 	fmt.Println(processId)
+	fmt.Println(timestamp)
+	fmt.Println(random)
 
 	sequenceNo := atomic.AddUint64(&sequence, delta)
 	return &channelId{
@@ -113,4 +135,50 @@ func dumpHexString(hexByte []byte) string {
 	hexStr := hex.EncodeToString(hexByte)
 
 	return hexStr
+}
+
+func macAddress() (macs []string, err error) {
+	netInterfaces, err := net.Interfaces()
+	if err != nil {
+		return macs, err
+	}
+
+	for _, netInterface := range netInterfaces {
+		macAddr := netInterface.HardwareAddr.String()
+		if len(macAddr) == 0 {
+			continue
+		}
+
+		macs = append(macs, macAddr)
+	}
+
+	return macs, nil
+}
+
+func macToInt64(mac string) uint64 {
+	macBytes := make([]byte, 8)
+	hexNum, _ := hex.DecodeString(strings.ReplaceAll(mac, ":", ""))
+	for i, hexVal := range hexNum {
+		macBytes[i+2] = hexVal
+	}
+
+	return buf.ByteToUInt64(macBytes)
+}
+
+func findMaxMacUInt64() uint64 {
+	macAddrs, _ := macAddress() // TODO ignore err now.
+	if len(macAddrs) == 0 {
+		return 0
+	}
+
+	macUInt64s := make([]uint64, 0)
+	for _, mac := range macAddrs {
+		macUInt64 := macToInt64(mac)
+		macUInt64s = append(macUInt64s, macUInt64)
+	}
+	sort.Slice(macUInt64s, func(i, j int) bool {
+		return macUInt64s[i] > macUInt64s[j]
+	})
+
+	return macUInt64s[0]
 }

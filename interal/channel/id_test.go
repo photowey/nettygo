@@ -17,14 +17,9 @@
 package channel
 
 import (
-	"encoding/hex"
 	"fmt"
-	"net"
 	"reflect"
-	"strings"
 	"testing"
-
-	"github.com/photowey/nettygo/interal/buf"
 )
 
 func Test_channelId_LongText(t *testing.T) {
@@ -124,34 +119,11 @@ func TestNewChannelId(t *testing.T) {
 				t.Errorf("NewChannelId() = %v, want %v", got, tt.want)
 			}
 
-			macAddrs, _ := MacAddrs()
+			macAddrs, _ := macAddress()
+			fmt.Println(macAddrs)
 			for _, mac := range macAddrs {
-				macBytes := make([]byte, 8)
-				hexNum, _ := hex.DecodeString(strings.ReplaceAll(mac, ":", ""))
-				for i, hexVal := range hexNum {
-					macBytes[i+2] = hexVal
-				}
-				fmt.Println(macAddrs)
-				fmt.Println(buf.ByteToUInt64(macBytes))
+				fmt.Println(macToInt64(mac))
 			}
 		})
 	}
-}
-
-func MacAddrs() (macs []string, err error) {
-	netInterfaces, err := net.Interfaces()
-	if err != nil {
-		return macs, err
-	}
-
-	for _, netInterface := range netInterfaces {
-		macAddr := netInterface.HardwareAddr.String()
-		if len(macAddr) == 0 {
-			continue
-		}
-
-		macs = append(macs, macAddr)
-	}
-
-	return macs, nil
 }
