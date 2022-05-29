@@ -32,26 +32,35 @@ type channel struct {
 	pipeline Pipeline
 }
 
-func (c *channel) Id() Id {
+func (ch *channel) Id() Id {
 	return nil
 }
 
-func (c *channel) Parent() Channel {
+func (ch *channel) Parent() Channel {
 	return nil
 }
 
-func (c *channel) Config() Config {
+func (ch *channel) Config() Config {
 	return Config{}
 }
 
-func (c *channel) Read() Channel {
-	return c
+func (ch *channel) Read() Channel {
+	return ch
 }
 
-func (c *channel) Flush() Channel {
-	return c
+func (ch *channel) Flush() Channel {
+	return ch
 }
 
-func (c *channel) Pipeline() Pipeline {
-	return c.pipeline
+func (ch *channel) Pipeline() Pipeline {
+	return ch.pipeline
+}
+
+func NewChannel() Channel {
+	ch := &channel{
+		id: NewChannelId(),
+	}
+	ch.pipeline = NewPipeline(ch)
+
+	return ch
 }

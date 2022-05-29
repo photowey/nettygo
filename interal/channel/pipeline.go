@@ -16,6 +16,8 @@
 
 package channel
 
+var _ Pipeline = (*pipeline)(nil)
+
 type Pipeline interface {
 	AddFirst(name string, handler Handler) Pipeline
 	AddLast(name string, handler Handler) Pipeline
@@ -34,4 +36,82 @@ type Pipeline interface {
 	Names() []string
 	ToMap() map[string]Handler
 	Flush() Pipeline
+}
+
+type pipeline struct {
+	channel Channel
+}
+
+func (pl *pipeline) AddFirst(name string, handler Handler) Pipeline {
+	return nil
+}
+
+func (pl *pipeline) AddLast(name string, handler Handler) Pipeline {
+	return nil
+}
+
+func (pl *pipeline) AddBefore(base, name string, handler Handler) Pipeline {
+	return nil
+}
+
+func (pl *pipeline) AddAfter(base, name string, handler Handler) Pipeline {
+	return nil
+}
+
+func (pl *pipeline) Remove(name string) Handler {
+	return nil
+}
+
+func (pl *pipeline) RemoveFirst(name string) Handler {
+	return nil
+}
+
+func (pl *pipeline) RemoveLast(name string) Handler {
+	return nil
+}
+
+func (pl *pipeline) Replace(old, new string, handler Handler) Handler {
+	return nil
+}
+
+func (pl *pipeline) First() Handler {
+	return nil
+}
+
+func (pl *pipeline) Last() Handler {
+	return nil
+}
+
+func (pl *pipeline) Get(name string) Handler {
+	return nil
+}
+
+func (pl *pipeline) Context(handler Handler) HandlerContext {
+	return nil
+}
+
+func (pl *pipeline) ContextN(name string) HandlerContext {
+	return nil
+}
+
+func (pl *pipeline) Channel() Channel {
+	return nil
+}
+
+func (pl *pipeline) Names() []string {
+	return nil
+}
+
+func (pl *pipeline) ToMap() map[string]Handler {
+	return nil
+}
+
+func (pl *pipeline) Flush() Pipeline {
+	return nil
+}
+
+func NewPipeline(channel Channel) Pipeline {
+	return &pipeline{
+		channel: channel,
+	}
 }
