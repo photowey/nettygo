@@ -16,7 +16,74 @@
 
 package channel
 
+import (
+	"github.com/photowey/nettygo/interal/concurrent"
+)
+
 type HandlerContext interface {
 	Channel() Channel
 	Handler() Handler
+	Executor() concurrent.EventExecutor
+}
+
+type HeadContext struct {
+	DefaultHandlerContext
+}
+
+type TailContext struct {
+	DefaultHandlerContext
+}
+
+type DefaultHandlerContext struct {
+	prev     *DefaultHandlerContext
+	next     *DefaultHandlerContext
+	name     string
+	handler  Handler
+	executor concurrent.EventExecutor
+	pipeline Pipeline
+}
+
+func (hc *DefaultHandlerContext) Channel() Channel {
+	return nil
+}
+
+func (hc *DefaultHandlerContext) Handler() Handler {
+	return nil
+}
+
+func (hc *DefaultHandlerContext) Executor() concurrent.EventExecutor {
+	return nil
+}
+
+func newHeadContext(pl Pipeline) *DefaultHandlerContext {
+	// TODO
+	return &DefaultHandlerContext{
+		pipeline: pl,
+	}
+}
+
+func newTailContext(pl Pipeline) *DefaultHandlerContext {
+	// TODO
+	return &DefaultHandlerContext{
+		pipeline: pl,
+	}
+}
+
+func newContext(group concurrent.EventExecutorGroup, name string, handler Handler) *DefaultHandlerContext {
+	executor := childExecutor(group)
+
+	ctx := &DefaultHandlerContext{}
+	ctx.name = name
+	ctx.handler = handler
+	ctx.executor = executor
+
+	return ctx
+}
+
+func childExecutor(group concurrent.EventExecutorGroup) concurrent.EventExecutor {
+	if group == nil {
+		return nil
+	}
+
+	return nil
 }

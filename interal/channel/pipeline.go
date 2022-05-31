@@ -16,11 +16,17 @@
 
 package channel
 
+import (
+	"github.com/photowey/nettygo/interal/concurrent"
+)
+
 var _ Pipeline = (*pipeline)(nil)
 
 type Pipeline interface {
 	AddFirst(name string, handler Handler) Pipeline
+	AddFirstGroup(group concurrent.EventExecutorGroup, name string, handler Handler) Pipeline
 	AddLast(name string, handler Handler) Pipeline
+	AddLastGroup(group concurrent.EventExecutorGroup, name string, handler Handler) Pipeline
 	AddBefore(base, name string, handler Handler) Pipeline
 	AddAfter(base, name string, handler Handler) Pipeline
 	Remove(name string) Handler
@@ -39,15 +45,33 @@ type Pipeline interface {
 }
 
 type pipeline struct {
+	head    *DefaultHandlerContext
+	tail    *DefaultHandlerContext
 	channel Channel
 }
 
 func (pl *pipeline) AddFirst(name string, handler Handler) Pipeline {
-	return nil
+	return pl.AddFirstGroup(nil, name, handler)
+}
+
+func (pl *pipeline) AddFirstGroup(group concurrent.EventExecutorGroup, name string, handler Handler) Pipeline {
+	name = pl.filterName(name)
+	ctx := newContext(group, name, handler)
+	pl.addFirst0(ctx)
+
+	return pl
 }
 
 func (pl *pipeline) AddLast(name string, handler Handler) Pipeline {
-	return nil
+	return pl.AddLastGroup(nil, name, handler)
+}
+
+func (pl *pipeline) AddLastGroup(group concurrent.EventExecutorGroup, name string, handler Handler) Pipeline {
+	name = pl.filterName(name)
+	ctx := newContext(group, name, handler)
+	pl.addFirst0(ctx)
+
+	return pl
 }
 
 func (pl *pipeline) AddBefore(base, name string, handler Handler) Pipeline {
@@ -110,8 +134,32 @@ func (pl *pipeline) Flush() Pipeline {
 	return nil
 }
 
+func (pl *pipeline) addFirst0(newCtx *DefaultHandlerContext) {
+	nextCtx := pl.head.next
+	newCtx.prev = pl.head
+	newCtx.next = nextCtx
+	pl.head.next = newCtx
+	nextCtx.prev = newCtx
+}
+
+func (pl *pipeline) addLast0(newCtx *DefaultHandlerContext) {
+	prev := pl.tail.prev
+	newCtx.prev = prev
+	newCtx.next = pl.tail
+	prev.next = newCtx
+	pl.tail.prev = newCtx
+}
+
+func (pl *pipeline) filterName(name string) string {
+	return name
+}
+
 func NewPipeline(channel Channel) Pipeline {
-	return &pipeline{
+	pl := &pipeline{
 		channel: channel,
 	}
+	pl.head = newHeadContext(pl)
+	pl.tail = newTailContext(pl)
+
+	return pl
 }
