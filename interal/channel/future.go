@@ -24,8 +24,6 @@ var _ Future = (*SucceededFuture)(nil)
 
 type Future interface {
 	concurrent.Future
-	Sync() Future
-	Await() Future
 	Channel() Channel
 }
 
@@ -45,12 +43,12 @@ func (fu SucceededFuture) Cause() error {
 	return nil
 }
 
-func (fu SucceededFuture) Sync() Future {
-	return nil
+func (fu *SucceededFuture) Sync() any {
+	return fu
 }
 
-func (fu SucceededFuture) Await() Future {
-	return nil
+func (fu *SucceededFuture) Await() any {
+	return fu
 }
 
 func (fu SucceededFuture) Channel() Channel {

@@ -20,4 +20,6 @@ type Future interface {
 	IsSuccess() bool
 	IsCancellable() bool
 	Cause() error
+	Sync() any
+	Await() any
 }
