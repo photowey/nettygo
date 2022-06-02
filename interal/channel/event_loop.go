@@ -20,45 +20,16 @@ import (
 	"github.com/photowey/nettygo/interal/concurrent"
 )
 
-var _ Future = (*SucceededFuture)(nil)
-
-type Future interface {
-	concurrent.Future
-	Sync() Future
-	Await() Future
-	Channel() Channel
-}
-
-type SucceededFuture struct {
-	channel Channel
-}
-
-func (fu SucceededFuture) IsSuccess() bool {
-	return false
-}
-
-func (fu SucceededFuture) IsCancellable() bool {
-	return false
-}
-
-func (fu SucceededFuture) Cause() error {
-	return nil
-}
-
-func (fu SucceededFuture) Sync() Future {
-	return nil
-}
-
-func (fu SucceededFuture) Await() Future {
-	return nil
-}
-
-func (fu SucceededFuture) Channel() Channel {
-	return nil
-}
-
-func NewSucceededFuture(ch Channel) Future {
-	return &SucceededFuture{
-		channel: ch,
+type (
+	EventLoop interface {
+		concurrent.OrderedEventExecutor
+		EventLoopGroup
+		Parent() EventLoopGroup
 	}
-}
+
+	EventLoopGroup interface {
+		concurrent.EventExecutorGroup
+		Next() EventLoop
+		Register(channel Channel) Future
+	}
+)

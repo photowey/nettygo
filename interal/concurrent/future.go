@@ -15,3 +15,9 @@
  */
 
 package concurrent
+
+type Future interface {
+	IsSuccess() bool
+	IsCancellable() bool
+	Cause() error
+}

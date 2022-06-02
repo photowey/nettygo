@@ -15,3 +15,7 @@
  */
 
 package concurrent
+
+type Promise interface {
+	Future
+}

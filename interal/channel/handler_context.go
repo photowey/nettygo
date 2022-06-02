@@ -20,6 +20,13 @@ import (
 	"github.com/photowey/nettygo/interal/concurrent"
 )
 
+const (
+	Init = iota
+	AddPending
+	AddComplete
+	RemoveComplete
+)
+
 type HandlerContext interface {
 	Channel() Channel
 	Handler() Handler
@@ -35,16 +42,18 @@ type TailContext struct {
 }
 
 type DefaultHandlerContext struct {
-	prev     *DefaultHandlerContext
-	next     *DefaultHandlerContext
-	name     string
-	handler  Handler
-	executor concurrent.EventExecutor
-	pipeline Pipeline
+	prev            *DefaultHandlerContext
+	next            *DefaultHandlerContext
+	name            string
+	handler         Handler
+	executor        concurrent.EventExecutor
+	pipeline        Pipeline
+	succeededFuture Future
+	handlerState    int
 }
 
 func (hc *DefaultHandlerContext) Channel() Channel {
-	return nil
+	return hc.pipeline.Channel()
 }
 
 func (hc *DefaultHandlerContext) Handler() Handler {
@@ -58,21 +67,25 @@ func (hc *DefaultHandlerContext) Executor() concurrent.EventExecutor {
 func newHeadContext(pl Pipeline) *DefaultHandlerContext {
 	// TODO
 	return &DefaultHandlerContext{
-		pipeline: pl,
+		pipeline:     pl,
+		handlerState: Init,
 	}
 }
 
 func newTailContext(pl Pipeline) *DefaultHandlerContext {
 	// TODO
 	return &DefaultHandlerContext{
-		pipeline: pl,
+		pipeline:     pl,
+		handlerState: Init,
 	}
 }
 
 func newContext(group concurrent.EventExecutorGroup, name string, handler Handler) *DefaultHandlerContext {
 	executor := childExecutor(group)
 
-	ctx := &DefaultHandlerContext{}
+	ctx := &DefaultHandlerContext{
+		handlerState: Init,
+	}
 	ctx.name = name
 	ctx.handler = handler
 	ctx.executor = executor

@@ -15,3 +15,12 @@
  */
 
 package concurrent
+
+type (
+	EventExecutor        interface{}
+	OrderedEventExecutor interface {
+		EventExecutor
+	}
+)
+
+type EventExecutorGroup interface{}

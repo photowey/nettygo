@@ -45,9 +45,11 @@ type Pipeline interface {
 }
 
 type pipeline struct {
-	head    *DefaultHandlerContext
-	tail    *DefaultHandlerContext
-	channel Channel
+	head            *DefaultHandlerContext
+	tail            *DefaultHandlerContext
+	channel         Channel
+	succeededFuture Future
+	childExecutors  map[string]concurrent.EventExecutor
 }
 
 func (pl *pipeline) AddFirst(name string, handler Handler) Pipeline {
@@ -156,10 +158,15 @@ func (pl *pipeline) filterName(name string) string {
 
 func NewPipeline(channel Channel) Pipeline {
 	pl := &pipeline{
-		channel: channel,
+		channel:         channel,
+		succeededFuture: NewSucceededFuture(channel),
+		childExecutors:  make(map[string]concurrent.EventExecutor),
 	}
+
 	pl.head = newHeadContext(pl)
 	pl.tail = newTailContext(pl)
+	pl.head.next = pl.tail
+	pl.tail.prev = pl.head
 
 	return pl
 }
