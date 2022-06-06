@@ -45,8 +45,8 @@ type Pipeline interface {
 }
 
 type pipeline struct {
-	head            *DefaultHandlerContext
-	tail            *DefaultHandlerContext
+	head            *defaultHandlerContext
+	tail            *defaultHandlerContext
 	channel         Channel
 	succeededFuture Future
 	childExecutors  map[string]concurrent.EventExecutor
@@ -136,7 +136,7 @@ func (pl *pipeline) Flush() Pipeline {
 	return nil
 }
 
-func (pl *pipeline) addFirst0(newCtx *DefaultHandlerContext) {
+func (pl *pipeline) addFirst0(newCtx *defaultHandlerContext) {
 	nextCtx := pl.head.next
 	newCtx.prev = pl.head
 	newCtx.next = nextCtx
@@ -144,7 +144,7 @@ func (pl *pipeline) addFirst0(newCtx *DefaultHandlerContext) {
 	nextCtx.prev = newCtx
 }
 
-func (pl *pipeline) addLast0(newCtx *DefaultHandlerContext) {
+func (pl *pipeline) addLast0(newCtx *defaultHandlerContext) {
 	prev := pl.tail.prev
 	newCtx.prev = prev
 	newCtx.next = pl.tail

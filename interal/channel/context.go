@@ -31,19 +31,42 @@ type HandlerContext interface {
 	Channel() Channel
 	Handler() Handler
 	Executor() concurrent.EventExecutor
+	Close(err error)
+	Attachment() Attachment
+	SetAttachment(attr Attachment)
+	Inbound() bool
 }
 
-type HeadContext struct {
-	DefaultHandlerContext
+type HeadContext interface {
+	HandlerContext
 }
 
-type TailContext struct {
-	DefaultHandlerContext
+type ExceptionContext interface {
+	HandlerContext
 }
 
-type DefaultHandlerContext struct {
-	prev            *DefaultHandlerContext
-	next            *DefaultHandlerContext
+type InboundContext interface {
+	HandlerContext
+}
+type OutboundContext interface {
+	HandlerContext
+}
+
+type ActiveContext interface {
+	HandlerContext
+}
+
+type InactiveContext interface {
+	HandlerContext
+}
+
+type TailContext interface {
+	HandlerContext
+}
+
+type defaultHandlerContext struct {
+	prev            *defaultHandlerContext
+	next            *defaultHandlerContext
 	name            string
 	handler         Handler
 	executor        concurrent.EventExecutor
@@ -52,38 +75,55 @@ type DefaultHandlerContext struct {
 	handlerState    int
 }
 
-func (hc *DefaultHandlerContext) Channel() Channel {
-	return hc.pipeline.Channel()
+func (hctx *defaultHandlerContext) Channel() Channel {
+	return hctx.pipeline.Channel()
 }
 
-func (hc *DefaultHandlerContext) Handler() Handler {
-	return nil
+func (hctx *defaultHandlerContext) Handler() Handler {
+	return hctx.handler
 }
 
-func (hc *DefaultHandlerContext) Executor() concurrent.EventExecutor {
-	return nil
+func (hctx *defaultHandlerContext) Executor() concurrent.EventExecutor {
+	return hctx.executor
 }
 
-func newHeadContext(pl Pipeline) *DefaultHandlerContext {
+func (hctx *defaultHandlerContext) Close(err error) {
 	// TODO
-	return &DefaultHandlerContext{
+}
+
+func (hctx *defaultHandlerContext) Attachment() Attachment {
+	// TODO
+	return nil
+}
+
+func (hctx *defaultHandlerContext) SetAttachment(attr Attachment) {
+	// TODO
+}
+
+func (hctx *defaultHandlerContext) Inbound() bool {
+	return true
+}
+
+func newHeadContext(pl Pipeline) *defaultHandlerContext {
+	// TODO
+	return &defaultHandlerContext{
 		pipeline:     pl,
 		handlerState: Init,
 	}
 }
 
-func newTailContext(pl Pipeline) *DefaultHandlerContext {
+func newTailContext(pl Pipeline) *defaultHandlerContext {
 	// TODO
-	return &DefaultHandlerContext{
+	return &defaultHandlerContext{
 		pipeline:     pl,
 		handlerState: Init,
 	}
 }
 
-func newContext(group concurrent.EventExecutorGroup, name string, handler Handler) *DefaultHandlerContext {
+func newContext(group concurrent.EventExecutorGroup, name string, handler Handler) *defaultHandlerContext {
 	executor := childExecutor(group)
 
-	ctx := &DefaultHandlerContext{
+	ctx := &defaultHandlerContext{
 		handlerState: Init,
 	}
 	ctx.name = name

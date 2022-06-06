@@ -16,8 +16,51 @@
 
 package channel
 
+import (
+	"github.com/photowey/nettygo/interal/exception"
+)
+
+type Base interface {
+	HandlerAdded(ctx HandlerContext)
+	HandlerRemoved(ctx HandlerContext)
+	ExceptionCaught(ctx HandlerContext, ex exception.Exception)
+}
+
 type Handler interface {
-	handlerAdded(ctx HandlerContext)
-	handlerRemoved(ctx HandlerContext)
-	exceptionCaught(ctx HandlerContext, err error)
+	Base
+	HeadHandler
+	ActiveHandler
+	InboundHandler
+	OutboundHandler
+	ExceptionHandler
+	InactiveHandler
+	TailHandler
+}
+
+type HeadHandler interface {
+	Head(ctx HeadContext)
+}
+
+type InboundHandler interface {
+	HandleRead(ctx InboundContext, message Message)
+}
+
+type OutboundHandler interface {
+	HandleWrite(ctx OutboundContext, message Message)
+}
+
+type ActiveHandler interface {
+	HandleActive(ctx ActiveContext)
+}
+
+type InactiveHandler interface {
+	HandleInactive(ctx InactiveContext, ex exception.Exception)
+}
+
+type ExceptionHandler interface {
+	HandleException(ctx ExceptionContext, ex exception.Exception)
+}
+
+type TailHandler interface {
+	Tail(ctx TailContext)
 }

@@ -16,4 +16,4 @@
 
 package channel
 
-type InboundInvoker interface{}
+type Attachment interface{}

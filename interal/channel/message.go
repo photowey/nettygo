@@ -16,4 +16,4 @@
 
 package channel
 
-type OutboundInvoker interface{}
+type Message interface{}
