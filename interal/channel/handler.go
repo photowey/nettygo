@@ -24,6 +24,7 @@ type Base interface {
 	HandlerAdded(ctx HandlerContext)
 	HandlerRemoved(ctx HandlerContext)
 	ExceptionCaught(ctx HandlerContext, ex exception.Exception)
+	Inbound() int // -1: in 0:all 1: out
 }
 
 type Handler interface {

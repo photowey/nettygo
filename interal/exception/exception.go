@@ -27,17 +27,23 @@ const (
 	single      = 1  // [x]
 )
 
+var _ Exception = (*exception)(nil)
+
 type Stack []uintptr
 
 type PrintWriter struct {
 	writer io.Writer
 }
 
-type Exception interface {
-	Unwrap() error
-	Error() string
+type Throwable interface {
 	Stack() Stack
 	PrintStackTrace(pw PrintWriter, message ...string)
+}
+
+type Exception interface {
+	Throwable
+	Unwrap() error
+	Error() string
 }
 
 type exception struct {

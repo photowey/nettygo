@@ -18,6 +18,7 @@ package channel
 
 import (
 	"github.com/photowey/nettygo/interal/concurrent"
+	"github.com/photowey/nettygo/interal/exception"
 )
 
 var _ Pipeline = (*pipeline)(nil)
@@ -42,6 +43,15 @@ type Pipeline interface {
 	Names() []string
 	ToMap() map[string]Handler
 	Flush() Pipeline
+	FireChannelRegistered() Pipeline
+	FireChannelUnregistered() Pipeline
+	FireChannelActive() Pipeline
+	FireChannelInactive() Pipeline
+	FireExceptionCaught(ex exception.Exception) Pipeline
+	FireUserEventTriggered(event Event) Pipeline
+	FireChannelRead(message Message) Pipeline
+	FireChannelReadComplete() Pipeline
+	FireChannelWritabilityChanged() Pipeline
 }
 
 type pipeline struct {
@@ -50,6 +60,7 @@ type pipeline struct {
 	channel         Channel
 	succeededFuture Future
 	childExecutors  map[string]concurrent.EventExecutor
+	size            int
 }
 
 func (pl *pipeline) AddFirst(name string, handler Handler) Pipeline {
@@ -136,12 +147,50 @@ func (pl *pipeline) Flush() Pipeline {
 	return nil
 }
 
+func (pl *pipeline) FireChannelRegistered() Pipeline {
+	return nil
+}
+
+func (pl *pipeline) FireChannelUnregistered() Pipeline {
+	return nil
+}
+
+func (pl *pipeline) FireChannelActive() Pipeline {
+	return nil
+}
+
+func (pl *pipeline) FireChannelInactive() Pipeline {
+	return nil
+}
+
+func (pl *pipeline) FireExceptionCaught(ex exception.Exception) Pipeline {
+	return nil
+}
+
+func (pl *pipeline) FireUserEventTriggered(event Event) Pipeline {
+	return nil
+}
+
+func (pl *pipeline) FireChannelRead(message Message) Pipeline {
+	return nil
+}
+
+func (pl *pipeline) FireChannelReadComplete() Pipeline {
+	return nil
+}
+
+func (pl *pipeline) FireChannelWritabilityChanged() Pipeline {
+	return nil
+}
+
 func (pl *pipeline) addFirst0(newCtx *defaultHandlerContext) {
 	nextCtx := pl.head.next
 	newCtx.prev = pl.head
 	newCtx.next = nextCtx
 	pl.head.next = newCtx
 	nextCtx.prev = newCtx
+
+	pl.size = pl.size + 1
 }
 
 func (pl *pipeline) addLast0(newCtx *defaultHandlerContext) {
@@ -150,6 +199,8 @@ func (pl *pipeline) addLast0(newCtx *defaultHandlerContext) {
 	newCtx.next = pl.tail
 	prev.next = newCtx
 	pl.tail.prev = newCtx
+
+	pl.size = pl.size + 1
 }
 
 func (pl *pipeline) filterName(name string) string {
@@ -167,6 +218,8 @@ func NewPipeline(channel Channel) Pipeline {
 	pl.tail = newTailContext(pl)
 	pl.head.next = pl.tail
 	pl.tail.prev = pl.head
+
+	pl.size = 2
 
 	return pl
 }
