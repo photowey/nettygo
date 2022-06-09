@@ -34,7 +34,7 @@ type HandlerContext interface {
 	Close(err error)
 	Attachment() Attachment
 	SetAttachment(attr Attachment)
-	Inbound() bool
+	Inbound() int8
 }
 
 type HeadContext interface {
@@ -60,6 +60,11 @@ type InactiveContext interface {
 	HandlerContext
 }
 
+type EventContext interface {
+	HandlerContext
+	HandleEvent(event Event)
+}
+
 type TailContext interface {
 	HandlerContext
 }
@@ -72,7 +77,7 @@ type defaultHandlerContext struct {
 	executor        concurrent.EventExecutor
 	pipeline        Pipeline
 	succeededFuture Future
-	handlerState    int
+	handlerState    int8
 }
 
 func (hctx *defaultHandlerContext) Channel() Channel {
@@ -88,20 +93,40 @@ func (hctx *defaultHandlerContext) Executor() concurrent.EventExecutor {
 }
 
 func (hctx *defaultHandlerContext) Close(err error) {
-	// TODO
+	hctx.Channel().Close(err)
 }
 
 func (hctx *defaultHandlerContext) Attachment() Attachment {
-	// TODO
-	return nil
+	return hctx.Channel().Attachment
 }
 
 func (hctx *defaultHandlerContext) SetAttachment(attr Attachment) {
-	// TODO
+	hctx.Channel().SetAttachment(attr)
 }
 
-func (hctx *defaultHandlerContext) Inbound() bool {
-	return true
+func (hctx *defaultHandlerContext) Inbound() int8 {
+	return hctx.handler.Inbound() // ?
+}
+
+func (hctx *defaultHandlerContext) HandleEvent(event Event) {
+	next := hctx
+	for {
+		if next = next.nextCtx(); next == nil {
+			break
+		}
+		if handler, ok := next.Handler().(EventHandler); ok {
+			handler.HandleEvent(next, event)
+			break
+		}
+	}
+}
+
+func (hctx *defaultHandlerContext) prevCtx() *defaultHandlerContext {
+	return hctx.prev
+}
+
+func (hctx *defaultHandlerContext) nextCtx() *defaultHandlerContext {
+	return hctx.next
 }
 
 func newHeadContext(pl Pipeline) *defaultHandlerContext {

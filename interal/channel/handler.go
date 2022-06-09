@@ -24,7 +24,7 @@ type Base interface {
 	HandlerAdded(ctx HandlerContext)
 	HandlerRemoved(ctx HandlerContext)
 	ExceptionCaught(ctx HandlerContext, ex exception.Exception)
-	Inbound() int // -1: in 0:all 1: out
+	Inbound() int8 // -1: in 0:all 1: out
 }
 
 type Handler interface {
@@ -35,6 +35,7 @@ type Handler interface {
 	OutboundHandler
 	ExceptionHandler
 	InactiveHandler
+	EventHandler
 	TailHandler
 }
 
@@ -62,6 +63,9 @@ type ExceptionHandler interface {
 	HandleException(ctx ExceptionContext, ex exception.Exception)
 }
 
+type EventHandler interface {
+	HandleEvent(ctx EventContext, event Event)
+}
 type TailHandler interface {
 	Tail(ctx TailContext)
 }

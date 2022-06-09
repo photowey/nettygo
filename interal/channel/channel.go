@@ -16,6 +16,10 @@
 
 package channel
 
+import (
+	"context"
+)
+
 var _ Channel = (*channel)(nil)
 
 type Channel interface {
@@ -25,11 +29,21 @@ type Channel interface {
 	Read() Channel
 	Flush() Channel
 	Pipeline() Pipeline
+	Close(err error)
+	IsActive() bool
+	State() int32
+	Attachment() Attachment
+	SetAttachment(attr Attachment)
+	Context() context.Context
 }
 
 type channel struct {
-	id       Id
-	pipeline Pipeline
+	id         Id
+	ctx        context.Context
+	cancel     context.CancelFunc
+	pipeline   Pipeline
+	attachment Attachment
+	state      int32 // high-low 0xxx0000 00000000 00000000 00000000 ?
 }
 
 func (ch *channel) Id() Id {
@@ -54,6 +68,31 @@ func (ch *channel) Flush() Channel {
 
 func (ch *channel) Pipeline() Pipeline {
 	return ch.pipeline
+}
+
+func (ch *channel) Close(err error) { // Exception ?
+	// TODO
+}
+
+func (ch *channel) IsActive() bool {
+	// TODO
+	return false
+}
+
+func (ch *channel) State() int32 {
+	return ch.state
+}
+
+func (ch *channel) Attachment() Attachment {
+	return ch.attachment
+}
+
+func (ch *channel) SetAttachment(attr Attachment) {
+	ch.attachment = attr
+}
+
+func (ch *channel) Context() context.Context {
+	return ch.ctx
 }
 
 func NewChannel() Channel {
