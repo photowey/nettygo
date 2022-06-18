@@ -47,11 +47,11 @@ type channel struct {
 }
 
 func (ch *channel) Id() Id {
-	return nil
+	return ch.id
 }
 
 func (ch *channel) Parent() Channel {
-	return nil
+	return ch
 }
 
 func (ch *channel) Config() Config {

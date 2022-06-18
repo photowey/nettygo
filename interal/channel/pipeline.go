@@ -17,8 +17,11 @@
 package channel
 
 import (
+	"sync"
+
 	"github.com/photowey/nettygo/interal/concurrent"
 	"github.com/photowey/nettygo/interal/exception"
+	"github.com/pkg/errors"
 )
 
 var _ Pipeline = (*pipeline)(nil)
@@ -28,8 +31,10 @@ type Pipeline interface {
 	AddFirstGroup(group concurrent.EventExecutorGroup, name string, handler Handler) Pipeline
 	AddLast(name string, handler Handler) Pipeline
 	AddLastGroup(group concurrent.EventExecutorGroup, name string, handler Handler) Pipeline
-	AddBefore(base, name string, handler Handler) Pipeline
-	AddAfter(base, name string, handler Handler) Pipeline
+	AddBefore(base, name string, handler Handler) (Pipeline, error)
+	AddBeforeGroup(group concurrent.EventExecutorGroup, base, name string, handler Handler) (Pipeline, error)
+	AddAfter(base, name string, handler Handler) (Pipeline, error)
+	AddAfterGroup(group concurrent.EventExecutorGroup, base, name string, handler Handler) (Pipeline, error)
 	Remove(name string) Handler
 	RemoveFirst(name string) Handler
 	RemoveLast(name string) Handler
@@ -61,6 +66,7 @@ type pipeline struct {
 	succeededFuture Future
 	childExecutors  map[string]concurrent.EventExecutor
 	size            int
+	lock            *sync.Mutex
 }
 
 func (pl *pipeline) AddFirst(name string, handler Handler) Pipeline {
@@ -87,12 +93,56 @@ func (pl *pipeline) AddLastGroup(group concurrent.EventExecutorGroup, name strin
 	return pl
 }
 
-func (pl *pipeline) AddBefore(base, name string, handler Handler) Pipeline {
-	return nil
+func (pl *pipeline) AddBefore(base, name string, handler Handler) (Pipeline, error) {
+	return pl.AddBeforeGroup(nil, base, name, handler)
 }
 
-func (pl *pipeline) AddAfter(base, name string, handler Handler) Pipeline {
-	return nil
+func (pl *pipeline) AddBeforeGroup(group concurrent.EventExecutorGroup, base, name string, handler Handler) (Pipeline, error) {
+	name = pl.filterName(name)
+	ctx, err := pl.getContextOrDie(base)
+	if err != nil {
+		return pl, err
+	}
+	newCtx := newContext(group, name, handler)
+	pl.addBefore0(ctx, newCtx)
+
+	// TODO handle registered
+
+	executor := newCtx.Executor()
+	if executor != nil && executor.InEventLoop() {
+		pl.callHandlerAddedInEventLoop(newCtx, true)
+		return pl, nil
+	}
+
+	pl.callHandlerAdded0(ctx)
+
+	return pl, nil
+}
+
+func (pl *pipeline) AddAfter(base, name string, handler Handler) (Pipeline, error) {
+	return pl.AddAfterGroup(name, base, name, handler)
+}
+
+func (pl *pipeline) AddAfterGroup(group concurrent.EventExecutorGroup, base, name string, handler Handler) (Pipeline, error) {
+	name = pl.filterName(name)
+	ctx, err := pl.getContextOrDie(base)
+	if err != nil {
+		return pl, err
+	}
+	newCtx := newContext(group, name, handler)
+	pl.addAfter0(ctx, newCtx)
+
+	// TODO handle registered
+
+	executor := newCtx.Executor()
+	if executor != nil && executor.InEventLoop() {
+		pl.callHandlerAddedInEventLoop(newCtx, true)
+		return pl, nil
+	}
+
+	pl.callHandlerAdded0(ctx)
+
+	return pl, nil
 }
 
 func (pl *pipeline) Remove(name string) Handler {
@@ -203,8 +253,54 @@ func (pl *pipeline) addLast0(newCtx *defaultHandlerContext) {
 	pl.size = pl.size + 1
 }
 
+func (pl *pipeline) addBefore0(ctx *defaultHandlerContext, newCtx *defaultHandlerContext) {
+	newCtx.prev = ctx.prev
+	newCtx.next = ctx
+	ctx.prev.next = newCtx
+	ctx.prev = newCtx
+
+	pl.size = pl.size + 1
+}
+
+func (pl *pipeline) addAfter0(ctx *defaultHandlerContext, newCtx *defaultHandlerContext) {
+	newCtx.prev = ctx
+	newCtx.next = ctx.next
+	ctx.next.prev = newCtx
+	ctx.next = newCtx
+
+	pl.size = pl.size + 1
+}
+
 func (pl *pipeline) filterName(name string) string {
 	return name
+}
+
+func (pl *pipeline) getContextOrDie(name string) (*defaultHandlerContext, error) {
+	ctx := pl.context0(name)
+	if ctx == nil {
+		return nil, errors.Errorf("no such context:[%s]", name)
+	}
+
+	return ctx, nil
+}
+
+func (pl *pipeline) context0(name string) *defaultHandlerContext {
+	next := pl.head.next
+	for next != nil {
+		if next.name == name {
+			return next
+		}
+	}
+
+	return nil
+}
+
+func (pl *pipeline) callHandlerAddedInEventLoop(ctx *defaultHandlerContext, added bool) {
+	// TODO
+}
+
+func (pl *pipeline) callHandlerAdded0(ctx *defaultHandlerContext) {
+	// TODO
 }
 
 func NewPipeline(channel Channel) Pipeline {
@@ -212,6 +308,7 @@ func NewPipeline(channel Channel) Pipeline {
 		channel:         channel,
 		succeededFuture: NewSucceededFuture(channel),
 		childExecutors:  make(map[string]concurrent.EventExecutor),
+		lock:            new(sync.Mutex),
 	}
 
 	pl.head = newHeadContext(pl)

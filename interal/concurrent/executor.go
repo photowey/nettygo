@@ -17,7 +17,9 @@
 package concurrent
 
 type (
-	EventExecutor        interface{}
+	EventExecutor interface {
+		InEventLoop() bool
+	}
 	OrderedEventExecutor interface {
 		EventExecutor
 	}
